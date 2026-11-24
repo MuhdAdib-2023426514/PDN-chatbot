@@ -38,255 +38,6 @@ exclusions:
     - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/56
     - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/86
     - https://pdn.gov.my/v2/images/Borang2025/Blood_Donor_Registration_Form_Icon.jpg
-    - https://pdn.gov.my/v2/images/2_1ab.jpg
-    - https://pdn.gov.my/v2/images/4_2ab.jpg
-    - https://pdn.gov.my/v2/images/5_1abc.jpg
-    - https://pdn.gov.my/v2/images/slider_statik.jpg
-    - https://pdn.gov.my/v2/images/img_space_amp.jpg
-    - https://pdn.gov.my/v2/images/blood1.png
-    - https://pdn.gov.my/v2/images/people.png
-    - https://pdn.gov.my/v2/images/a.png
-    - https://pdn.gov.my/v2/index.php/component/k2/item/76-penganjur-kempen-derma-darah
-    - https://pdn.gov.my/v2/index.php/component/k2/item/77-penderma-darah
-    - https://pdn.gov.my/v2/index.php/component/k2/item/82-aktiviti
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/101-faqs-umum
-    - https://pdn.gov.my/v2/index.php?id=121
-    - https://pdn.gov.my/v2/index.php?id=122
-    - https://pdn.gov.my/v2/pengurusan-tenaga/index.php
-    - https://pdn.gov.my/v2/tender/index.php
-    - https://pdn.gov.my/v2/index.php/component/k2/item/143-penderma-darah
-    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/29-direktori-ketua-seksyen?start=20
-    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/30-direktori-ketua-unit?start=20
-    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/30-direktori-ketua-unit?start=40
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/106
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/107
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/50
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/51
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/52
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/53
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/54
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/61
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/67
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/68
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/69
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/itemlist/category/1-blog?start=16
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/itemlist/category/1-blog?start=8
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=16
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=24
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=32
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=40
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=48
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=56
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=64
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=8
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=16
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=24
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=32
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=40
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=48
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=56
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=64
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=8
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=16
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=24
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=32
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=40
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=48
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=56
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=64
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=8
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/57-unit-hematologi
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/87-risalah-the-rh-blood-group-system
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/88-risalah-persediaan-menderma-darah
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/89-risalah-panduan-menganjur-kempen
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/90-risalah-aferesis
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/91-risalah-apa-itu-anemia
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/92-risalah-hematoma
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/93-risalah-hep-c
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/94-risalah-transfusi-darah
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/95-risalah-penderma-lapsed
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/96-risalah-penderma-seroconvert
-    - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/97-risalah-syphilis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/100
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/101
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/106
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/107
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/50
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/51
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/52
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/53
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/54
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/57
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/60
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/61
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/71
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/85
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/87
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/88
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/89
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/90
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/91
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/92
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/93
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/94
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/95
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/96
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/97
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/100
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/101
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/106
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/107
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/57
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/60
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/61
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/67
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/68
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/69
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/71
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/85
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/87
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/88
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/89
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/90
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/91
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/92
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/93
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/94
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/95
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/96
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/97
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/99
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=0
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/100
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/101
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/50
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/51
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/52
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/53
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/54
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/57
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/60
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/61
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/67
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/68
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/69
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/71
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/85
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/87
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/88
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/89
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/90
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/91
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/92
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/93
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/94
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/95
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/96
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/97
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/99
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=0
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/100
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/101
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/106
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/107
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/50
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/51
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/52
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/53
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/54
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/57
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/67
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/68
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/69
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/71
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/85
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/87
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/88
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/89
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/90
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/91
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/92
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/93
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/94
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/95
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/96
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/97
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/99
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=0
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/101-faqs-umum
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/57-unit-hematologi
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/87-risalah-the-rh-blood-group-system
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/88-risalah-persediaan-menderma-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/89-risalah-panduan-menganjur-kempen
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/90-risalah-aferesis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/91-risalah-apa-itu-anemia
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/92-risalah-hematoma
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/93-risalah-hep-c
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/94-risalah-transfusi-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/95-risalah-penderma-lapsed
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/96-risalah-penderma-seroconvert
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/97-risalah-syphilis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/99-faqs-bahagian-national-surveillance-and-assessment
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/101-faqs-umum
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/57-unit-hematologi
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/87-risalah-the-rh-blood-group-system
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/88-risalah-persediaan-menderma-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/89-risalah-panduan-menganjur-kempen
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/90-risalah-aferesis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/91-risalah-apa-itu-anemia
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/92-risalah-hematoma
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/93-risalah-hep-c
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/94-risalah-transfusi-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/95-risalah-penderma-lapsed
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/96-risalah-penderma-seroconvert
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/97-risalah-syphilis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/99-faqs-bahagian-national-surveillance-and-assessment
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/101-faqs-umum
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/57-unit-hematologi
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/87-risalah-the-rh-blood-group-system
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/88-risalah-persediaan-menderma-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/89-risalah-panduan-menganjur-kempen
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/90-risalah-aferesis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/91-risalah-apa-itu-anemia
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/92-risalah-hematoma
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/93-risalah-hep-c
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/94-risalah-transfusi-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/95-risalah-penderma-lapsed
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/96-risalah-penderma-seroconvert
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/97-risalah-syphilis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/99-faqs-bahagian-national-surveillance-and-assessment
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/101-faqs-umum
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/57-unit-hematologi
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/87-risalah-the-rh-blood-group-system
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/88-risalah-persediaan-menderma-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/89-risalah-panduan-menganjur-kempen
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/90-risalah-aferesis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/91-risalah-apa-itu-anemia
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/92-risalah-hematoma
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/93-risalah-hep-c
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/94-risalah-transfusi-darah
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/95-risalah-penderma-lapsed
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/96-risalah-penderma-seroconvert
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/97-risalah-syphilis
-    - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/99-faqs-bahagian-national-surveillance-and-assessment
   patterns:
     # Hard Phase 0-3 JEvents exclusion (deferred to Phase 4 structured schedule track)
     - id: exclude-jevents-index-path
@@ -375,9 +126,6 @@ exclusions:
     - id: exclude-decorative-templates
       pattern: /v2/templates/**
       reason: template_ui_assets_excluded_at_gate_a
-    - id: exclude-pengurusan-tenaga-microsite
-      pattern: /v2/pengurusan-tenaga/**
-      reason: internal_energy_microsite_excluded_at_gate_a
     - id: exclude-tender-ui-images
       pattern: /v2/tender/_images/**
       reason: decorative_tender_icons_excluded_at_gate_a
@@ -390,24 +138,12 @@ exclusions:
     - id: exclude-media-sosial-logos
       pattern: /v2/media_sosial_pdn/logo/**
       reason: decorative_tool_logos_excluded_at_gate_a
-    - id: exclude-facility-kemudahan-2025
-      pattern: /v2/images/Kemudahan_2025/**
-      reason: facility_photos_no_ocr_text_excluded_at_gate_a
-    - id: exclude-facility-donation-suite-2025
-      pattern: /v2/images/Donation_Suite_2025/**
-      reason: facility_photos_no_ocr_text_excluded_at_gate_a
-    - id: exclude-building-photos-hubungikami
-      pattern: /v2/images/hubungikami/**
-      reason: building_photos_no_ocr_text_excluded_at_gate_a
-    - id: exclude-photos-penghargaan-penderma
-      pattern: /v2/images/penghargaan_penderma/**
-      reason: donor_appreciation_photos_excluded_at_gate_a
-    - id: exclude-photos-pengalamanpenderma
-      pattern: /v2/images/pengalamanpenderma/**
-      reason: donor_experience_photos_excluded_at_gate_a
-    - id: exclude-lab-activity-photos
-      pattern: /v2/images/BahagianPengurusanKualiti/Gambar_Aktiviti_Makmal_*
-      reason: lab_activity_photos_excluded_at_gate_a
+    - id: exclude-pengurusan-tenaga-icons
+      pattern: /v2/pengurusan-tenaga/_images/icon*
+      reason: decorative_icons_excluded_at_gate_a
+    - id: exclude-pengurusan-tenaga-logos
+      pattern: /v2/pengurusan-tenaga/_images/Logo_*
+      reason: decorative_logos_excluded_at_gate_a
 approvals:
   pages:
     urls:
@@ -1001,6 +737,1451 @@ approvals:
         check_interval: 24h
         approved_by: project-owner
         approved_at: '2026-11-24T08:34:58.597974+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/component/k2/item/143-penderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/component/k2/item/76-penganjur-kempen-derma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/index.php/component/k2/item/77-penderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/index.php/component/k2/item/82-aktiviti
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/29-direktori-ketua-seksyen?start=20
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/30-direktori-ketua-unit?start=20
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/30-direktori-ketua-unit?start=40
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/101-faqs-umum
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/106
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/107
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/50
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/51
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/52
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/53
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/54
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/57-unit-hematologi
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/61
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/67
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/68
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/69
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/87-risalah-the-rh-blood-group-system
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/88-risalah-persediaan-menderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/89-risalah-panduan-menganjur-kempen
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/90-risalah-aferesis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/91-risalah-apa-itu-anemia
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/92-risalah-hematoma
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/93-risalah-hep-c
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/94-risalah-transfusi-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/95-risalah-penderma-lapsed
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/96-risalah-penderma-seroconvert
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/97-risalah-syphilis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/100
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/101
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/101-faqs-umum
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/106
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/107
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/50
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/51
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/52
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/53
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/54
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/57
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/57-unit-hematologi
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/60
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/61
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/71
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/85
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/87
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/87-risalah-the-rh-blood-group-system
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/88
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/88-risalah-persediaan-menderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/89
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/89-risalah-panduan-menganjur-kempen
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/90
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/90-risalah-aferesis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/91
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/91-risalah-apa-itu-anemia
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/92
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/92-risalah-hematoma
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/93
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/93-risalah-hep-c
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/94
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/94-risalah-transfusi-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/95
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/95-risalah-penderma-lapsed
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/96
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/96-risalah-penderma-seroconvert
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/97
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/97-risalah-syphilis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/99-faqs-bahagian-national-surveillance-and-assessment
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/itemlist/category/1-blog?start=16
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/itemlist/category/1-blog?start=8
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/100
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/101
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/101-faqs-umum
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/106
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/107
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/57
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/57-unit-hematologi
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/60
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/61
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/67
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/68
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/69
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/71
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/85
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/87
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/87-risalah-the-rh-blood-group-system
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/88
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/88-risalah-persediaan-menderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/89
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/89-risalah-panduan-menganjur-kempen
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/90
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/90-risalah-aferesis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/91
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/91-risalah-apa-itu-anemia
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/92
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/92-risalah-hematoma
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/93
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/93-risalah-hep-c
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/94
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/94-risalah-transfusi-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/95
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/95-risalah-penderma-lapsed
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/96
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/96-risalah-penderma-seroconvert
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/97
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/97-risalah-syphilis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/99
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/item/99-faqs-bahagian-national-surveillance-and-assessment
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=0
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=16
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=24
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=32
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=40
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=48
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=56
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=64
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-perolehan-darah/itemlist/category/1-blog?start=8
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/100
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/101
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/101-faqs-umum
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/50
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/51
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/52
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/53
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/54
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/57
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/57-unit-hematologi
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/60
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/61
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/67
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/68
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/69
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/71
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/85
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/87
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/87-risalah-the-rh-blood-group-system
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/88
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/88-risalah-persediaan-menderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/89
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/89-risalah-panduan-menganjur-kempen
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/90
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/90-risalah-aferesis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/91
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/91-risalah-apa-itu-anemia
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/92
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/92-risalah-hematoma
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/93
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/93-risalah-hep-c
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/94
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/94-risalah-transfusi-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/95
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/95-risalah-penderma-lapsed
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/96
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/96-risalah-penderma-seroconvert
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/97
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/97-risalah-syphilis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/99
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/item/99-faqs-bahagian-national-surveillance-and-assessment
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=0
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=16
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=24
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=32
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=40
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=48
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=56
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=64
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-produksi-pengurusan-bekalan-darah/itemlist/category/1-blog?start=8
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/100
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/101
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/101-faqs-umum
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/106
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/107
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/50
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/51
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/52
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/53
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/54
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/57
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/57-unit-hematologi
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/67
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/67-seksyen-national-haemovigilance-coordinating-centre-nhcc
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/68
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/69
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/71
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/85
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/85-faqs-bahagian-produksi-dan-pengurusan-bekalan-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/87
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/87-risalah-the-rh-blood-group-system
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/88
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/88-risalah-persediaan-menderma-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/89
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/89-risalah-panduan-menganjur-kempen
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/90
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/90-risalah-aferesis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/91
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/91-risalah-apa-itu-anemia
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/92
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/92-risalah-hematoma
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/93
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/93-risalah-hep-c
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/94
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/94-risalah-transfusi-darah
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/95
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/95-risalah-penderma-lapsed
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/96
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/96-risalah-penderma-seroconvert
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/97
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/97-risalah-syphilis
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/99
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/99-faqs-bahagian-national-surveillance-and-assessment
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=0
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=16
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=24
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=32
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=40
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=48
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=56
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=64
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/itemlist/category/1-blog?start=8
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/index.php?id=121
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/index.php?id=122
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/pengurusan-tenaga/index.php
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/tender/index.php
+        reason: gate_a_approved_duplicate_alias_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/pengurusan-tenaga
+        reason: gate_a_approved_pengurusan_tenaga_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
     patterns:
       - id: pattern-staff-dir-pengurusan-tertinggi
         pattern: 
@@ -1072,6 +2253,52 @@ approvals:
         check_interval: 24h
         approved_by: project-owner
         approved_at: '2026-11-24T08:34:58.597974+00:00'
+      - url: https://pdn.gov.my/v2/images/2_1ab.jpg
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/4_2ab.jpg
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/5_1abc.jpg
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/a.png
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/blood1.png
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/img_space_amp.jpg
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/people.png
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: https://pdn.gov.my/v2/images/slider_statik.jpg
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - url: 
+          https://pdn.gov.my/v2/pengurusan-tenaga/_images/laman_web_pusat_darah_negara.png
+        reason: gate_a_approved_image_for_gate_b_filtering
+        check_interval: 24h
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
     patterns:
       - id: pattern-blood-stock-graphic-images-stokdarah-png
         pattern: /v2/images/stokdarah/*.png
@@ -1309,6 +2536,79 @@ approvals:
         supersession: none
         approved_by: project-owner
         approved_at: '2026-11-24T08:34:58.597974+00:00'
+      - id: pattern-pengurusan-tenaga-posters-png
+        pattern: /v2/pengurusan-tenaga/_images/poster-pengurusan-tenaga/*.png
+        resource_type: image_poster
+        reason: Pengurusan Tenaga posters (PNG) — filter at Gate B
+        max_matches: 50
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-pengurusan-tenaga-posters-jpg
+        pattern: /v2/pengurusan-tenaga/_images/poster-pengurusan-tenaga/*.jpg
+        resource_type: image_poster
+        reason: Pengurusan Tenaga posters (JPG) — filter at Gate B
+        max_matches: 30
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-facility-kemudahan-2025-jpg
+        pattern: /v2/images/Kemudahan_2025/*.jpg
+        resource_type: image_poster
+        reason: PDN facility photos — filter at Gate B
+        max_matches: 30
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-facility-donation-suite-2025-jpg
+        pattern: /v2/images/Donation_Suite_2025/*.jpg
+        resource_type: image_poster
+        reason: PDN Donation Suite photos — filter at Gate B
+        max_matches: 30
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-hubungikami-photos-jpg
+        pattern: /v2/images/hubungikami/*.jpg
+        resource_type: image_poster
+        reason: PDN location photos — filter at Gate B
+        max_matches: 20
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-penghargaan-penderma-jpg
+        pattern: /v2/images/penghargaan_penderma/*.jpg
+        resource_type: image_poster
+        reason: Donor appreciation photos — filter at Gate B
+        max_matches: 30
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-pengalamanpenderma-jpg
+        pattern: /v2/images/pengalamanpenderma/*.jpg
+        resource_type: image_poster
+        reason: Donor experience photos — filter at Gate B
+        max_matches: 30
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
+      - id: pattern-lab-activity-photos-jpg
+        pattern: 
+          /v2/images/BahagianPengurusanKualiti/Gambar_Aktiviti_Makmal_*.jpg
+        resource_type: image_poster
+        reason: Lab activity photos — filter at Gate B
+        max_matches: 30
+        check_interval: 24h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-24T08:59:03.736571+00:00'
   documents:
     urls:
       - url: 
