@@ -1,0 +1,113 @@
+# PDN Multimodal Knowledge Sync — Crawl Scope (Gate A Single Source of Truth)
+#
+# IMPORTANT:
+# - This file is human-owned and is the ONLY authority for content-scraping scope.
+# - Discovery NEVER overwrites this file; discovery writes proposals to
+#   data/discovery/crawl_scope.proposed.yaml.
+# - Precedence (highest first):
+#     1. Explicit URL exclusion
+#     2. Pattern exclusion
+#     3. Explicit URL approval
+#     4. Pattern approval
+#     5. Default: pending (not crawl-eligible)
+# - Broad cross-directory wildcards (/**) are allowed ONLY in exclusions,
+#   never in approvals.
+
+schema_version: 1
+allowed_host: pdn.gov.my
+allowed_path_prefix: /v2
+
+exclusions:
+  urls: []
+  patterns:
+    # Hard Phase 0-3 JEvents exclusion (deferred to Phase 4 structured schedule track)
+    - id: exclude-jevents-index-path
+      pattern: "/v2/index.php/component/jevents/**"
+      reason: deferred_to_structured_schedule_phase
+    - id: exclude-jevents-short-path
+      pattern: "/v2/component/jevents/**"
+      reason: deferred_to_structured_schedule_phase
+    - id: exclude-jevents-query
+      query_param: "option=com_jevents"
+      reason: deferred_to_structured_schedule_phase
+
+    # System, admin, interactive/auth, and print/feed endpoints
+    - id: exclude-robots-administrator
+      pattern: "/v2/administrator/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-bin
+      pattern: "/v2/bin/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-cache
+      pattern: "/v2/cache/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-cli
+      pattern: "/v2/cli/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-components
+      pattern: "/v2/components/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-includes
+      pattern: "/v2/includes/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-installation
+      pattern: "/v2/installation/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-language
+      pattern: "/v2/language/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-layouts
+      pattern: "/v2/layouts/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-libraries
+      pattern: "/v2/libraries/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-logs
+      pattern: "/v2/logs/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-modules
+      pattern: "/v2/modules/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-plugins
+      pattern: "/v2/plugins/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-robots-tmp
+      pattern: "/v2/tmp/**"
+      reason: disallowed_by_v2_robots_txt
+    - id: exclude-system-registration
+      pattern: "/v2/index.php/registration*"
+      reason: system_auth_endpoint
+    - id: exclude-system-search
+      pattern: "/v2/index.php/component/search*"
+      reason: system_search_endpoint
+    - id: exclude-system-users
+      pattern: "/v2/index.php/component/users*"
+      reason: system_users_endpoint
+    - id: exclude-system-mailto
+      pattern: "/v2/index.php/component/mailto*"
+      reason: system_mailto_endpoint
+    - id: exclude-query-feed
+      query_param: "format=feed"
+      reason: system_feed_variant
+    - id: exclude-query-opensearch
+      query_param: "format=opensearch"
+      reason: system_opensearch_variant
+    - id: exclude-query-tmpl-component
+      query_param: "tmpl=component"
+      reason: system_component_print_variant
+    - id: exclude-query-print
+      query_param: "print=1"
+      reason: system_print_variant
+
+# Approvals begin empty in Phase 0.
+# Populate via human review (or `pdn-sync scope approve` / `scope import`) after Phase 1 discovery.
+approvals:
+  pages:
+    urls: []
+    patterns: []
+  image_posters:
+    urls: []
+    patterns: []
+  documents:
+    urls: []
+    patterns: []

@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdn-sync"
+version = "0.1.0"
+description = "Continuous, two-gate multimodal knowledge ingestion pipeline for Pusat Darah Negara (PDN)."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "httpx>=0.28.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "ruamel.yaml>=0.18.0",
+    "typer>=0.15.0",
+]
+
+[project.scripts]
+pdn-sync = "pdn_sync.cli:app"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.14.0",
+    "pytest>=8.3.0",
+    "ruff>=0.9.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pdn_sync"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_configs = true
+mypy_path = "src"
+packages = ["pdn_sync"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,54 @@
+# PDN Multimodal Knowledge Sync — Ingestion, Review & Lifecycle Policy
+schema_version: 1
+
+# Gate B review policy (default: manual)
+approval_mode: manual
+
+# Number of consecutive complete, error-free discovery runs before an unlinked
+# resource transitions from no_longer_linked -> retired.
+retirement_consecutive_runs: 2
+
+# Domain timezone (machine timestamps are always UTC; schedules use Malaysia local time)
+domain_timezone: Asia/Kuala_Lumpur
+
+# Politeness & fetch safety limits (Section 2 Rule 2)
+politeness:
+  max_concurrency_per_host: 1
+  delay_min_seconds: 2.0
+  delay_max_seconds: 5.0
+  request_timeout_seconds: 20.0
+  max_document_bytes: 52428800 # 50 MiB
+
+# Discovery runtime guardrails (Section 6)
+discovery_bounds:
+  max_pages: 1500
+  max_depth: 8
+  max_listing_pages: 50
+  request_timeout_seconds: 20.0
+  max_run_duration_seconds: 7200
+  anomaly_growth_factor: 3.0
+
+# OCR confidence thresholds (Section 7)
+ocr:
+  confidence_threshold_overall: 0.75
+  confidence_threshold_critical: 0.85
+
+# Critical-fact rules (artifacts matching any rule are excluded from batch approval)
+critical_facts:
+  categories:
+    - blood_stock_graphic
+  keywords:
+    - waktu operasi
+    - operating hours
+    - kelayakan
+    - eligibility
+    - guideline
+    - notis
+    - vcjd
+    - mpox
+    - bekalan darah
+
+# Publication & indexing policy (Section 9)
+indexing:
+  small_table_max_rows_for_qdrant: 30
+  embed_donation_schedule_rows: false
