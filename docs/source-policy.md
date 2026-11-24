@@ -65,10 +65,13 @@ Enforced in code (`src/pdn_sync/config.py`, `src/pdn_sync/crawling/`):
 
 - Do not collect donor identities, form submissions, authentication data, or unrelated personal photographs.
 - Staff directory pages (`/v2/index.php/hubungi-kami/direktori-pegawai/**`) are classified as `staff_directory` with default `recommended_action: recommended_exclude`.
-- Officer names, phone numbers, emails, and photos are treated as personal data under Malaysia's PDPA:
-  - **If excluded at Gate A (default):** never content-scraped, extracted, or indexed.
-  - **If explicitly approved at Gate A:** retain only minimal chatbot-necessary official directory fields (name, designation, unit, official contact), never store officer photos by default, and **never capture staff directory pages into `tests/fixtures/`**.
-  - Update this section with explicit purpose documentation before approving any `staff_directory` URLs.
+- **Gate A Owner Approval Record (2026-11-24):** On `2026-11-24`, `project-owner` explicitly approved all 4 official PDN staff directory sections (`31-direktori-pengurusan-tertinggi`, `8-direktori-pegawai`, `29-direktori-ketua-seksyen`, `30-direktori-ketua-unit` plus the root directory index) in `config/crawl_scope.yaml`.
+  - **Documented purpose:** Enable the PDN chatbot to answer public inquiries about official PDN leadership, division/section/unit heads, and official office contact channels.
+  - **Strict PDPA minimization safeguards (enforced in Phase 2+):**
+    1. Extract and retain **only** official directory fields needed by the chatbot: officer name, official designation, division/section/unit, and official office contact (office phone/email/extension).
+    2. **Never** download, store, OCR, or index officer profile photographs by default.
+    3. **Never** capture `staff_directory` pages into `tests/fixtures/` (enforced by `pdn-sync fixtures capture`).
+    4. Keep officer records auditable and subject to retirement if removed from the live PDN directory.
 
 ## 5. Source-Access Clearance Checklist (Rule 1)
 

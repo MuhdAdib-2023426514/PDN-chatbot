@@ -47,9 +47,9 @@ def test_default_repo_scope_excludes_jevents_and_system_and_defaults_others_pend
     feed = evaluate_scope("https://pdn.gov.my/v2/index.php/informasi?format=feed", scope)
     assert feed.disposition == Disposition.EXCLUDED
 
-    # Homepage starts pending in Phase 0 until approved at Gate A
-    homepage = evaluate_scope("https://pdn.gov.my/v2/", scope)
-    assert homepage.disposition == Disposition.PENDING
+    # Unmatched / newly seen URLs must always default to pending
+    unmatched = evaluate_scope("https://pdn.gov.my/v2/index.php/unseen-new-section-2099", scope)
+    assert unmatched.disposition == Disposition.PENDING
 
     # Off-domain URL is always excluded
     off_domain = evaluate_scope("https://example.org/v2/", scope)
