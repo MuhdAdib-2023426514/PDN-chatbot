@@ -6,6 +6,7 @@ from datetime import datetime
 
 from sqlalchemy import (
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -114,3 +115,143 @@ class CompiledScopeCacheRow(Base):
     scope_file_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     compiled_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     compiled_json: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class ResourceFetchRow(Base):
+    __tablename__ = "resource_fetches"
+
+    fetch_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    run_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("sync_runs.run_id", ondelete="CASCADE"), nullable=False
+    )
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    url: Mapped[str] = mapped_column(Text, nullable=False)
+    final_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    redirect_chain_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    fetched_at_utc: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, index=True
+    )
+    http_status: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    etag: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    last_modified: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    content_type: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    byte_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    blob_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    fetch_outcome: Mapped[str] = mapped_column(String(32), nullable=False)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class ResourceVersionRow(Base):
+    __tablename__ = "resource_versions"
+    __table_args__ = (
+        UniqueConstraint("resource_id", "version_seq", name="uq_resource_version_seq"),
+    )
+
+    version_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    version_seq: Mapped[int] = mapped_column(Integer, nullable=False)
+    fetch_id: Mapped[str | None] = mapped_column(
+        String(64), ForeignKey("resource_fetches.fetch_id", ondelete="SET NULL"), nullable=True
+    )
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    semantic_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    captured_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    last_verified_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    source_effective_date: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    source_effective_date_provenance: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    extractor_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    extractor_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    state: Mapped[str] = mapped_column(String(32), nullable=False, default="current")
+
+
+class MediaAssetRow(Base):
+    __tablename__ = "media_assets"
+
+    asset_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    blob_sha256: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    mime_type: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    byte_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    width: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    height: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    captured_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    source_effective_date: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    usage_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class StagedArtifactRow(Base):
+    __tablename__ = "staged_artifacts"
+    __table_args__ = (
+        Index("ix_staged_artifacts_review_status", "review_status", "created_at_utc"),
+        Index("ix_staged_artifacts_resource_semantic", "resource_id", "semantic_hash"),
+    )
+
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    resource_version_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("resource_versions.version_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    resource_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    category: Mapped[str] = mapped_column(String(64), nullable=False)
+    policy_rule_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    semantic_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    extractor_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    extractor_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    json_path: Mapped[str] = mapped_column(Text, nullable=False)
+    markdown_path: Mapped[str] = mapped_column(Text, nullable=False)
+    validation_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    review_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    critical_fact_flags_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    warnings_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    source_effective_date: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    created_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReviewDecisionRow(Base):
+    __tablename__ = "review_decisions"
+
+    decision_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    batch_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    decided_at_utc: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, index=True
+    )
+    reviewer: Mapped[str] = mapped_column(String(128), nullable=False)
+    decision: Mapped[str] = mapped_column(String(48), nullable=False)
+    policy_mode: Mapped[str] = mapped_column(String(32), nullable=False)
+    artifact_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("staged_artifacts.artifact_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    resource_version_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    semantic_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    carried_from_decision_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)

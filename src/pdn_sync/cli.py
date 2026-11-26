@@ -1,7 +1,8 @@
-"""Command-line interface for PDN Multimodal Knowledge Sync (Phases 0-1)."""
+"""Command-line interface for PDN Multimodal Knowledge Sync (Phases 0-2)."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Annotated
 
@@ -21,10 +22,22 @@ from pdn_sync.crawling.clearance import (
 from pdn_sync.crawling.robots import RobotsUnavailableError
 from pdn_sync.discovery.crawler import DEFAULT_SEED_URL, DiscoveryOptions, run_discovery
 from pdn_sync.discovery.models import DiscoveryCategory
-from pdn_sync.discovery.scope_manager import ScopeManager, ScopeMutationError
+from pdn_sync.discovery.scope_manager import (
+    GateABlockedError,
+    ScopeManager,
+    ScopeMutationError,
+)
 from pdn_sync.domain.policy import Disposition, ResourceType
+from pdn_sync.extractors.contracts import ReviewStatus
 from pdn_sync.persistence.db import create_sqlite_engine, upgrade_database
 from pdn_sync.persistence.repository import ControlPlaneRepository, InventoryFilter
+from pdn_sync.persistence.staging_repo import StageQueueFilter
+from pdn_sync.staging.fixtures import FixtureCaptureBlockedError, capture_safe_fixture
+from pdn_sync.staging.gate_b import (
+    ExtractionOptions,
+    GateBService,
+    run_extraction_pipeline,
+)
 
 app = typer.Typer(
     name="pdn-sync",
@@ -34,9 +47,14 @@ app = typer.Typer(
 db_app = typer.Typer(help="SQLite control-plane migration commands.")
 inventory_app = typer.Typer(help="Inspect discovered URL and asset inventories.")
 scope_app = typer.Typer(help="Gate A crawl-scope validation and management commands.")
+stage_app = typer.Typer(help="Gate B staged extraction review, diff, approval, and override.")
+fixtures_app = typer.Typer(help="Safe fixture capture commands (Gate-A & PDPA enforced).")
+
 app.add_typer(db_app, name="db")
 app.add_typer(inventory_app, name="inventory")
 app.add_typer(scope_app, name="scope")
+app.add_typer(stage_app, name="stage")
+app.add_typer(fixtures_app, name="fixtures")
 
 
 @db_app.command("upgrade")
@@ -138,6 +156,100 @@ def discover(
         typer.echo(f"  {label}: {path}")
 
 
+@app.command("extract")
+def extract(
+    live: Annotated[
+        bool,
+        typer.Option("--live", help="Fetch Gate-A-approved resources live and stage for Gate B"),
+    ] = False,
+    pilot: Annotated[
+        bool,
+        typer.Option(
+            "--pilot", help="Run representative pilot batch (~25 pages, ~6 PDFs, ~14 posters)"
+        ),
+    ] = False,
+    resume: Annotated[
+        bool,
+        typer.Option("--resume", help="Skip resources that already have a staged artifact"),
+    ] = False,
+    resource_type: Annotated[
+        ResourceType | None,
+        typer.Option("--resource-type", help="Filter approved targets by resource_type"),
+    ] = None,
+    category: Annotated[
+        DiscoveryCategory | None,
+        typer.Option("--category", help="Filter approved targets by category"),
+    ] = None,
+    url: Annotated[
+        list[str] | None,
+        typer.Option("--url", help="Explicit Gate-A-approved URL(s) to extract"),
+    ] = None,
+    limit: Annotated[
+        int | None,
+        typer.Option("--limit", help="Maximum approved targets to process"),
+    ] = None,
+    scope_file: Annotated[
+        Path | None,
+        typer.Option("--scope-file", help="Path to config/crawl_scope.yaml"),
+    ] = None,
+    policy_file: Annotated[
+        Path | None,
+        typer.Option("--policy-file", help="Path to config/ingestion_policy.yaml"),
+    ] = None,
+    sqlite_path: Annotated[
+        Path | None,
+        typer.Option("--sqlite-path", help="Path to SQLite control-plane DB"),
+    ] = None,
+) -> None:
+    """Fetch Gate-A-approved pages, PDFs, and posters into BlobStore and Gate B staging."""
+    if not live:
+        typer.secho(
+            "Refusing live extraction without --live flag (safe default). "
+            "Pass --live with PDN_LIVE_CRAWL_ENABLED=true when ready.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    settings = AppSettings()
+    opts = ExtractionOptions(
+        live=True,
+        pilot=pilot,
+        resume=resume,
+        urls=list(url or []),
+        resource_type=resource_type,
+        category=category,
+        limit=limit,
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+    )
+    try:
+        summary = run_extraction_pipeline(
+            options=opts,
+            settings=settings,
+            progress_cb=lambda msg: typer.echo(f"[extract] {msg}"),
+        )
+    except (
+        ConfigurationError,
+        LiveCrawlBlockedError,
+        RobotsUnavailableError,
+        GateABlockedError,
+    ) as exc:
+        typer.secho(f"EXTRACTION BLOCKED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.secho(
+        f"Extraction complete: run_id={summary.run_id} skipped_resumed={summary.skipped_resumed} "
+        f"fetched={summary.fetched} not_modified={summary.not_modified} "
+        f"unchanged_blob={summary.unchanged_blob} failed={summary.failed} "
+        f"pending={summary.staged_pending} quarantined={summary.staged_quarantined} "
+        f"carried_forward={summary.carried_forward}",
+        fg=typer.colors.GREEN,
+    )
+    typer.echo(f"  benchmark: {json.dumps(summary.benchmark)}")
+
+
 @inventory_app.command("list")
 def inventory_list(
     resource_type: Annotated[
@@ -209,6 +321,384 @@ def inventory_list(
         )
 
 
+def _make_gate_b_service(
+    *,
+    scope_file: Path | None,
+    policy_file: Path | None,
+    sqlite_path: Path | None,
+    data_dir: Path | None,
+) -> tuple[AppSettings, GateBService]:
+    settings = AppSettings()
+    svc = GateBService(
+        sqlite_path=sqlite_path or settings.sqlite_path,
+        policy_path=policy_file or settings.ingestion_policy_file,
+        scope_path=scope_file or settings.scope_file,
+        data_dir=data_dir or settings.data_dir,
+    )
+    return settings, svc
+
+
+@stage_app.command("list")
+def stage_list(
+    status: Annotated[
+        ReviewStatus | None,
+        typer.Option("--status", help="Filter by review_status"),
+    ] = None,
+    category: Annotated[
+        str | None,
+        typer.Option("--category", help="Filter by category"),
+    ] = None,
+    resource_type: Annotated[
+        ResourceType | None,
+        typer.Option("--resource-type", help="Filter by resource_type"),
+    ] = None,
+    critical_only: Annotated[
+        bool,
+        typer.Option("--critical-only", help="Show only critical-fact or quarantined items"),
+    ] = False,
+    limit: Annotated[
+        int,
+        typer.Option("--limit", help="Max staged items to show"),
+    ] = 50,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """List staged artifacts ordered by Gate B review priority (critical facts first)."""
+    _, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    rows = svc.list_queue(
+        StageQueueFilter(
+            review_status=status,
+            category=category,
+            resource_type=resource_type.value if resource_type else None,
+            critical_only=critical_only,
+            limit=limit,
+        )
+    )
+    if not rows:
+        typer.secho("No staged artifacts match the filter.", fg=typer.colors.YELLOW)
+        raise typer.Exit(code=0)
+
+    typer.echo(f"Showing {len(rows)} staged artifacts (priority ordered):")
+    for r in rows:
+        flags = json.loads(r.critical_fact_flags_json)
+        flag_str = f" flags={','.join(flags)}" if flags else ""
+        typer.echo(
+            f"{r.artifact_id} [{r.review_status:14s}] [{r.validation_status:12s}] "
+            f"[{r.resource_type:12s}] [{r.category:20s}] {r.source_url}{flag_str}"
+        )
+
+
+@stage_app.command("show")
+def stage_show(
+    artifact_id: Annotated[str, typer.Argument(help="Staged artifact ID")],
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Display the Markdown staging view of a single artifact."""
+    _, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    try:
+        _, _, md = svc.show_artifact(artifact_id)
+    except ValueError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(md)
+
+
+@stage_app.command("diff")
+def stage_diff(
+    artifact_id: Annotated[str, typer.Argument(help="Staged artifact ID")],
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Show unified diff between staged artifact and previously approved version."""
+    _, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    try:
+        diff_text = svc.diff_artifact(artifact_id)
+    except ValueError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(diff_text)
+
+
+@stage_app.command("approve")
+def stage_approve(
+    artifact_id: Annotated[str | None, typer.Argument(help="Single artifact ID to approve")] = None,
+    all_valid: Annotated[
+        bool,
+        typer.Option("--all-valid", help="Batch-approve valid non-critical pending artifacts"),
+    ] = False,
+    category: Annotated[str | None, typer.Option("--category")] = None,
+    resource_type: Annotated[ResourceType | None, typer.Option("--resource-type")] = None,
+    pattern_id: Annotated[str | None, typer.Option("--pattern-id")] = None,
+    source_prefix: Annotated[str | None, typer.Option("--source-prefix")] = None,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Preview batch approval without writing decisions"),
+    ] = False,
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    notes: Annotated[str | None, typer.Option("--notes")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Approve a single staged artifact or safely batch-approve valid non-critical artifacts."""
+    settings, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    actor = reviewer or settings.operator_id
+
+    if artifact_id is not None:
+        try:
+            row = svc.approve_single(artifact_id=artifact_id, reviewer=actor, notes=notes)
+        except ValueError as exc:
+            typer.secho(f"APPROVE FAILED: {exc}", fg=typer.colors.RED, err=True)
+            raise typer.Exit(code=1) from exc
+        typer.secho(
+            f"Approved {row.artifact_id} (semantic_hash={row.semantic_hash[:12]}...)",
+            fg=typer.colors.GREEN,
+        )
+        return
+
+    if not any([all_valid, category, resource_type, pattern_id, source_prefix]):
+        typer.secho(
+            "Provide an artifact_id or batch filter (--all-valid / --category / --resource-type).",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    summary = svc.batch_approve(
+        flt=StageQueueFilter(
+            category=category,
+            resource_type=resource_type.value if resource_type else None,
+            pattern_id=pattern_id,
+            source_prefix=source_prefix,
+            limit=0,
+        ),
+        reviewer=actor,
+        dry_run=dry_run,
+        notes=notes,
+    )
+    mode = "DRY-RUN" if dry_run else "APPLIED"
+    typer.secho(
+        f"[{mode}] approved={len(summary.approved_ids)} "
+        f"excluded_critical_or_invalid={len(summary.excluded_critical_or_invalid)}",
+        fg=typer.colors.GREEN,
+    )
+    for aid in summary.approved_ids:
+        typer.echo(f"  + approve : {aid}")
+    for aid in summary.excluded_critical_or_invalid:
+        typer.echo(f"  ! skipped (critical/quarantined/invalid): {aid}")
+
+
+@stage_app.command("reject")
+def stage_reject(
+    artifact_id: Annotated[str, typer.Argument(help="Staged artifact ID to reject")],
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    notes: Annotated[str | None, typer.Option("--notes")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Reject a staged artifact at Gate B."""
+    settings, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    try:
+        row = svc.reject(
+            artifact_id=artifact_id,
+            reviewer=reviewer or settings.operator_id,
+            notes=notes,
+        )
+    except ValueError as exc:
+        typer.secho(f"REJECT FAILED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+    typer.secho(f"Rejected {row.artifact_id}", fg=typer.colors.YELLOW)
+
+
+@stage_app.command("override")
+def stage_override(
+    artifact_id: Annotated[str, typer.Argument(help="Quarantined/staged artifact ID")],
+    file: Annotated[Path, typer.Option("--file", help="Markdown or JSON human transcription")],
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    notes: Annotated[str | None, typer.Option("--notes")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Create a new audited human_transcription staged version linked to the same raw blob."""
+    settings, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    try:
+        new_row = svc.override(
+            artifact_id=artifact_id,
+            override_file=file,
+            reviewer=reviewer or settings.operator_id,
+            notes=notes,
+        )
+    except ValueError as exc:
+        typer.secho(f"OVERRIDE FAILED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+    typer.secho(
+        f"Created human_transcription version {new_row.artifact_id} "
+        f"(semantic_hash={new_row.semantic_hash[:12]}..., status={new_row.review_status}). "
+        "Approve explicitly with `pdn-sync stage approve`.",
+        fg=typer.colors.GREEN,
+    )
+
+
+@app.command("reextract")
+def reextract(
+    extractor: Annotated[
+        str,
+        typer.Option("--extractor", help="Extractor family to re-run: html, pdf, or ocr"),
+    ],
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Report carry-forward vs changed counts without writing"),
+    ] = False,
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Re-run an extractor offline against stored blobs with semantic_hash carry-forward."""
+    settings, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    try:
+        summary = svc.reextract(
+            extractor=extractor,
+            reviewer=reviewer or settings.operator_id,
+            dry_run=dry_run,
+        )
+    except ValueError as exc:
+        typer.secho(f"REEXTRACT FAILED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    mode = "DRY-RUN" if dry_run else "APPLIED"
+    typer.secho(
+        f"[{mode}] extractor={summary.extractor} total={summary.total_considered} "
+        f"carry_forward={summary.unchanged_carry_forward} "
+        f"changed_pending={summary.changed_pending_review} "
+        f"quarantined={summary.quarantined}",
+        fg=typer.colors.GREEN,
+    )
+
+
+@fixtures_app.command("capture")
+def fixtures_capture(
+    url: Annotated[str, typer.Argument(help="Gate-A-approved, non-PDPA URL to sanitize")],
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Target fixtures directory"),
+    ] = Path("tests/fixtures"),
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+) -> None:
+    """Safely capture a sanitized fixture (refuses unapproved and staff_directory URLs)."""
+    try:
+        out_path = capture_safe_fixture(
+            url,
+            scope_file=scope_file,
+            policy_file=policy_file,
+            fixtures_dir=output_dir,
+        )
+    except (
+        GateABlockedError,
+        FixtureCaptureBlockedError,
+        ConfigurationError,
+        RobotsUnavailableError,
+        RuntimeError,
+    ) as exc:
+        typer.secho(f"FIXTURE CAPTURE BLOCKED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.secho(f"Captured sanitized fixture: {out_path}", fg=typer.colors.GREEN)
+
+
+@app.command("publish")
+def publish(
+    approved_only: Annotated[
+        bool,
+        typer.Option("--approved-only", help="Enforce Gate B approved-only publication check"),
+    ] = True,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Verify Gate B publish eligibility without indexing"),
+    ] = True,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
+) -> None:
+    """Verify Gate B publish eligibility (Qdrant/FTS5 activation happens in Phase 3 after ADR)."""
+    if not approved_only:
+        typer.secho(
+            "Refusing publish without --approved-only (Gate B mandatory).",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if not dry_run:
+        typer.secho(
+            "Active Qdrant/FTS5 publication is disabled in Phase 2 until Phase 3 ADR approval.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    _, svc = _make_gate_b_service(
+        scope_file=scope_file,
+        policy_file=policy_file,
+        sqlite_path=sqlite_path,
+        data_dir=data_dir,
+    )
+    ready, blocked = svc.check_publish_eligibility()
+    typer.secho(
+        f"[DRY-RUN] Gate B publish check: eligible_approved={len(ready)} blocked={len(blocked)}",
+        fg=typer.colors.GREEN,
+    )
+
+
 @scope_app.command("validate")
 def scope_validate(
     scope_file: Annotated[
@@ -247,42 +737,15 @@ def scope_validate(
 
 @scope_app.command("approve")
 def scope_approve(
-    url: Annotated[
-        str | None,
-        typer.Option("--url", help="Exact PDN URL to approve"),
-    ] = None,
-    resource_type: Annotated[
-        ResourceType,
-        typer.Option("--resource-type", help="Resource type for exact URL approval"),
-    ] = ResourceType.PAGE,
-    pattern_id: Annotated[
-        str | None,
-        typer.Option("--pattern-id", help="Promote a proposed pattern ID from proposed YAML"),
-    ] = None,
-    proposed_file: Annotated[
-        Path | None,
-        typer.Option("--proposed-file", help="Path to crawl_scope.proposed.yaml"),
-    ] = None,
-    reason: Annotated[
-        str,
-        typer.Option("--reason", help="Human review reason"),
-    ] = "gate_a_manual_approval",
-    check_interval: Annotated[
-        str,
-        typer.Option("--check-interval", help="Monitoring cadence (e.g. 3h, 24h)"),
-    ] = "24h",
-    reviewer: Annotated[
-        str | None,
-        typer.Option("--reviewer", help="Operator handle for audit trail"),
-    ] = None,
-    scope_file: Annotated[
-        Path | None,
-        typer.Option("--scope-file", help="Path to config/crawl_scope.yaml"),
-    ] = None,
-    sqlite_path: Annotated[
-        Path | None,
-        typer.Option("--sqlite-path", help="Path to SQLite control-plane DB"),
-    ] = None,
+    url: Annotated[str | None, typer.Option("--url")] = None,
+    resource_type: Annotated[ResourceType, typer.Option("--resource-type")] = ResourceType.PAGE,
+    pattern_id: Annotated[str | None, typer.Option("--pattern-id")] = None,
+    proposed_file: Annotated[Path | None, typer.Option("--proposed-file")] = None,
+    reason: Annotated[str, typer.Option("--reason")] = "gate_a_manual_approval",
+    check_interval: Annotated[str, typer.Option("--check-interval")] = "24h",
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
 ) -> None:
     """Approve an exact URL or promote a proposed pattern into config/crawl_scope.yaml."""
     if (url is None) == (pattern_id is None):
@@ -327,34 +790,13 @@ def scope_approve(
 
 @scope_app.command("exclude")
 def scope_exclude(
-    url: Annotated[
-        str | None,
-        typer.Option("--url", help="Exact PDN URL to exclude"),
-    ] = None,
-    pattern: Annotated[
-        str | None,
-        typer.Option("--pattern", help="Path exclusion glob (broad /** allowed)"),
-    ] = None,
-    rule_id: Annotated[
-        str | None,
-        typer.Option("--id", help="Rule ID for pattern exclusion"),
-    ] = None,
-    reason: Annotated[
-        str,
-        typer.Option("--reason", help="Reason for exclusion"),
-    ] = "gate_a_manual_exclusion",
-    reviewer: Annotated[
-        str | None,
-        typer.Option("--reviewer", help="Operator handle for audit trail"),
-    ] = None,
-    scope_file: Annotated[
-        Path | None,
-        typer.Option("--scope-file", help="Path to config/crawl_scope.yaml"),
-    ] = None,
-    sqlite_path: Annotated[
-        Path | None,
-        typer.Option("--sqlite-path", help="Path to SQLite control-plane DB"),
-    ] = None,
+    url: Annotated[str | None, typer.Option("--url")] = None,
+    pattern: Annotated[str | None, typer.Option("--pattern")] = None,
+    rule_id: Annotated[str | None, typer.Option("--id")] = None,
+    reason: Annotated[str, typer.Option("--reason")] = "gate_a_manual_exclusion",
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
 ) -> None:
     """Exclude an exact URL or path pattern in config/crawl_scope.yaml."""
     if (url is None) == (pattern is None):
@@ -395,22 +837,10 @@ def scope_exclude(
 @scope_app.command("import")
 def scope_import(
     csv_path: Annotated[Path, typer.Argument(help="Reviewer-edited url_inventory.csv path")],
-    dry_run: Annotated[
-        bool,
-        typer.Option("--dry-run", help="Preview diff without modifying config/crawl_scope.yaml"),
-    ] = False,
-    reviewer: Annotated[
-        str | None,
-        typer.Option("--reviewer", help="Operator handle for audit trail"),
-    ] = None,
-    scope_file: Annotated[
-        Path | None,
-        typer.Option("--scope-file", help="Path to config/crawl_scope.yaml"),
-    ] = None,
-    sqlite_path: Annotated[
-        Path | None,
-        typer.Option("--sqlite-path", help="Path to SQLite control-plane DB"),
-    ] = None,
+    dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
 ) -> None:
     """Import approved/excluded rows from edited url_inventory.csv into config/crawl_scope.yaml."""
     settings = AppSettings()
@@ -440,18 +870,9 @@ def scope_import(
 
 @scope_app.command("export")
 def scope_export(
-    output_dir: Annotated[
-        Path | None,
-        typer.Option("--output-dir", help="Target directory for joined inventory exports"),
-    ] = None,
-    scope_file: Annotated[
-        Path | None,
-        typer.Option("--scope-file", help="Path to config/crawl_scope.yaml"),
-    ] = None,
-    sqlite_path: Annotated[
-        Path | None,
-        typer.Option("--sqlite-path", help="Path to SQLite control-plane DB"),
-    ] = None,
+    output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
 ) -> None:
     """Re-export discovery inventory joined with current config/crawl_scope.yaml decisions."""
     settings = AppSettings()
@@ -473,14 +894,8 @@ def scope_export(
 
 @app.command("check-policy")
 def check_policy(
-    scope_file: Annotated[
-        Path | None,
-        typer.Option("--scope-file", help="Path to config/crawl_scope.yaml"),
-    ] = None,
-    policy_file: Annotated[
-        Path | None,
-        typer.Option("--policy-file", help="Path to config/ingestion_policy.yaml"),
-    ] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
 ) -> None:
     """Validate local configs and report offline source-access clearance status."""
     settings = AppSettings()

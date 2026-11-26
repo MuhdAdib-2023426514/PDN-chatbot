@@ -232,6 +232,17 @@ def _matches_query_exclusion(query_string: str, query_rule: str) -> bool:
     return False
 
 
+def _exact_url_key(normalized_url: str, *, allowed_path_prefix: str) -> str:
+    """Compare exact URLs ignoring redundant trailing slashes on subpath directories."""
+    parts = urlsplit(normalized_url)
+    prefix = allowed_path_prefix.rstrip("/")
+    path = parts.path
+    if path not in {"/", f"{prefix}/"} and path.endswith("/"):
+        path = path.rstrip("/")
+    query_part = f"?{parts.query}" if parts.query else ""
+    return f"{parts.scheme}://{parts.netloc}{path}{query_part}"
+
+
 def evaluate_scope(
     raw_url: str,
     scope: CrawlScopeConfig,
@@ -276,15 +287,19 @@ def evaluate_scope(
     query = parts.query
 
     # 1. Explicit URL exclusions
+    norm_key = _exact_url_key(normalized, allowed_path_prefix=scope.allowed_path_prefix)
     normalized_excl_urls = {
-        normalize_url(
-            u,
-            allowed_host=scope.allowed_host,
+        _exact_url_key(
+            normalize_url(
+                u,
+                allowed_host=scope.allowed_host,
+                allowed_path_prefix=scope.allowed_path_prefix,
+            ),
             allowed_path_prefix=scope.allowed_path_prefix,
         )
         for u in scope.exclusions.urls
     }
-    if normalized in normalized_excl_urls:
+    if norm_key in normalized_excl_urls:
         return ScopeEvaluation(
             disposition=Disposition.EXCLUDED,
             reason="explicit_url_exclusion",
@@ -331,7 +346,7 @@ def evaluate_scope(
                 allowed_host=scope.allowed_host,
                 allowed_path_prefix=scope.allowed_path_prefix,
             )
-            if normalized == rule_norm:
+            if norm_key == _exact_url_key(rule_norm, allowed_path_prefix=scope.allowed_path_prefix):
                 return ScopeEvaluation(
                     disposition=Disposition.APPROVED,
                     reason=url_rule.reason,

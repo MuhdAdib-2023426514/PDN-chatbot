@@ -153,6 +153,26 @@ def test_exclusions_override_approvals_and_bounded_pattern_matches_single_direct
     )
     assert res_nested.disposition == Disposition.PENDING
 
+    # Trailing-slash directory redirects match exact approved URLs cleanly
+    res_slash = evaluate_scope(
+        "https://pdn.gov.my/v2/kalkulator_tarikh_pendermaan_darah_utuh/",
+        CrawlScopeConfig(
+            approvals=ApprovalsSection(
+                pages=ResourceApprovals(
+                    urls=[
+                        ApprovalUrlRule(
+                            url="https://pdn.gov.my/v2/kalkulator_tarikh_pendermaan_darah_utuh",
+                            reason="standalone tool",
+                            approved_by="project-owner",
+                            approved_at=now,
+                        )
+                    ]
+                )
+            )
+        ),
+    )
+    assert res_slash.disposition == Disposition.APPROVED
+
     # Explicit URL exclusion overrides matching approval pattern
     res_excluded = evaluate_scope(
         "https://pdn.gov.my/v2/images/stokdarah/corrupt.png",
