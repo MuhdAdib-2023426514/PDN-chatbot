@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+from pdn_sync.telemetry.alerts import AlertItem
 
 
 class KnowledgeChunkHit(BaseModel):
@@ -121,6 +123,12 @@ class StatusResponse(BaseModel):
     quarantined_gate_b: int
     active_embedding_model: str | None = None
     active_qdrant_collection: str | None = None
+    retrieval_mode: str = "dense"
     qdrant_mode: str
     qdrant_published_points: int
+    dlq_count: int = 0
+    outbox_pending_count: int = 0
+    fts5_mismatches: dict[str, int] = Field(default_factory=dict)
+    oldest_pending_gate_b_age_hours: float | None = None
+    alerts: list[AlertItem] = Field(default_factory=list)
     last_completed_runs_by_profile: dict[str, dict[str, Any]]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -90,6 +91,9 @@ class IndexingPolicy(BaseModel):
     chunk_target_chars: int = Field(default=1000, ge=200, le=4000)
     chunk_overlap_chars: int = Field(default=150, ge=0, le=1000)
     embedding_model: str = Field(default="BAAI/bge-m3", min_length=1)
+    retrieval_mode: Literal["dense", "hybrid"] = Field(default="dense")
+    hybrid_rrf_k: int = Field(default=60, ge=1, le=500)
+    hybrid_candidate_multiplier: int = Field(default=4, ge=1, le=20)
 
     @model_validator(mode="after")
     def validate_chunk_overlap(self) -> IndexingPolicy:
@@ -110,6 +114,39 @@ class CalendarPolicy(BaseModel):
     allow_past_days_grace: int = Field(default=1, ge=0, le=31)
 
 
+class RetryPolicy(BaseModel):
+    """Phase 5 bounded retry & backoff policy for transient outages."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    max_attempts: int = Field(default=3, ge=1, le=10)
+    backoff_base_seconds: float = Field(default=2.0, gt=0.0, le=60.0)
+    backoff_max_seconds: float = Field(default=60.0, gt=0.0, le=600.0)
+    jitter_ratio: float = Field(default=0.25, ge=0.0, le=1.0)
+
+    @model_validator(mode="after")
+    def validate_backoff_bounds(self) -> RetryPolicy:
+        if self.backoff_max_seconds < self.backoff_base_seconds:
+            msg = "backoff_max_seconds must be >= backoff_base_seconds"
+            raise ValueError(msg)
+        return self
+
+
+class ObservabilityPolicy(BaseModel):
+    """Phase 5 alert thresholds for freshness, review backlogs, and sync drift."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    homepage_overdue_hours: int = Field(default=12, ge=1, le=720)
+    calendar_overdue_hours: int = Field(default=18, ge=1, le=720)
+    site_overdue_hours: int = Field(default=48, ge=1, le=720)
+    discovery_overdue_days: int = Field(default=14, ge=1, le=180)
+    max_pending_gate_b: int = Field(default=50, ge=0, le=10000)
+    max_pending_gate_b_age_hours: int = Field(default=168, ge=1, le=8760)
+    max_quarantined_gate_b: int = Field(default=0, ge=0, le=1000)
+    max_dlq_items: int = Field(default=0, ge=0, le=1000)
+
+
 class IngestionPolicyConfig(BaseModel):
     """Schema for config/ingestion_policy.yaml."""
 
@@ -125,6 +162,8 @@ class IngestionPolicyConfig(BaseModel):
     critical_facts: CriticalFactsPolicy = Field(default_factory=CriticalFactsPolicy)
     indexing: IndexingPolicy = Field(default_factory=IndexingPolicy)
     calendar: CalendarPolicy = Field(default_factory=CalendarPolicy)
+    retry: RetryPolicy = Field(default_factory=RetryPolicy)
+    observability: ObservabilityPolicy = Field(default_factory=ObservabilityPolicy)
 
     @field_validator("domain_timezone")
     @classmethod

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import typer
 
@@ -37,11 +37,20 @@ from pdn_sync.indexing.eval_runner import (
 )
 from pdn_sync.indexing.publisher import PublicationService
 from pdn_sync.indexing.qdrant_store import QdrantVectorStore
+from pdn_sync.ops.reconcile import reconcile_fts5, reconcile_outbox, reconcile_qdrant
+from pdn_sync.persistence.backup import (
+    BackupVerificationError,
+    create_online_backup,
+    restore_online_backup,
+    verify_backup,
+)
 from pdn_sync.persistence.db import create_sqlite_engine, upgrade_database
+from pdn_sync.persistence.ops_repo import OpsRepository
 from pdn_sync.persistence.publication_repo import PublicationRepository
 from pdn_sync.persistence.repository import ControlPlaneRepository, InventoryFilter
 from pdn_sync.persistence.staging_repo import GateBPublishBlockedError, StageQueueFilter
 from pdn_sync.scheduler.worker import WorkerProfile, run_profile_once, start_worker
+from pdn_sync.search.hybrid import ChunkBM25SearchService
 from pdn_sync.search.tables import StructuredTableSearchService
 from pdn_sync.staging.calendar_sync import CalendarSyncOptions, run_calendar_sync_pipeline
 from pdn_sync.staging.fixtures import FixtureCaptureBlockedError, capture_safe_fixture
@@ -50,6 +59,7 @@ from pdn_sync.staging.gate_b import (
     GateBService,
     run_extraction_pipeline,
 )
+from pdn_sync.telemetry.alerts import evaluate_alerts
 
 app = typer.Typer(
     name="pdn-sync",
@@ -65,6 +75,11 @@ api_app = typer.Typer(help="Read-only chatbot HTTP API commands (Phase 3+).")
 worker_app = typer.Typer(help="Single-process scheduled worker commands (ADR-orchestration.md).")
 eval_app = typer.Typer(help="Retrieval evaluation and multilingual embedding benchmarks.")
 calendar_app = typer.Typer(help="Phase 4 bounded JEvents blood donation schedule commands.")
+ops_app = typer.Typer(
+    help="Phase 5 reliability & operations (backup, restore, alerts, reconcile, DLQ)."
+)
+dlq_app = typer.Typer(help="Inspect and resolve outbox / dead-letter queue events.")
+ops_app.add_typer(dlq_app, name="dlq")
 
 app.add_typer(db_app, name="db")
 app.add_typer(inventory_app, name="inventory")
@@ -75,6 +90,7 @@ app.add_typer(api_app, name="api")
 app.add_typer(worker_app, name="worker")
 app.add_typer(eval_app, name="eval")
 app.add_typer(calendar_app, name="calendar")
+app.add_typer(ops_app, name="ops")
 
 
 @db_app.command("upgrade")
@@ -873,6 +889,10 @@ def eval_run(
         Path,
         typer.Option("--questions", help="Path to tests/eval/questions.yaml"),
     ] = Path("tests/eval/questions.yaml"),
+    mode: Annotated[
+        Literal["dense", "hybrid", "compare"],
+        typer.Option("--mode", help="Retrieval mode: dense, hybrid, or compare (both)"),
+    ] = "dense",
     embedding_model: Annotated[
         str | None,
         typer.Option("--embedding-model", help="Override embedding model"),
@@ -883,6 +903,7 @@ def eval_run(
     settings = AppSettings()
     db_path = sqlite_path or settings.sqlite_path
     suite = load_eval_suite(questions)
+    policy = load_ingestion_policy(settings.ingestion_policy_file)
     upgrade_database(db_path)
     engine = create_sqlite_engine(db_path)
     try:
@@ -891,20 +912,55 @@ def eval_run(
         model_name = (
             embedding_model
             or status.get("active_embedding_model")
-            or load_ingestion_policy(settings.ingestion_policy_file).indexing.embedding_model
+            or policy.indexing.embedding_model
         )
         embedder = create_embedder(str(model_name))
         table_search = StructuredTableSearchService(engine)
+        bm25_search = ChunkBM25SearchService(engine)
         with QdrantVectorStore(
             collection_name=settings.qdrant_collection,
             url=settings.qdrant_url,
             path=settings.qdrant_path,
         ) as qdrant:
+            if mode == "compare":
+                dense_rep = evaluate_retrieval(
+                    suite=suite,
+                    embedder=embedder,
+                    qdrant_store=qdrant,
+                    table_search=table_search,
+                    retrieval_mode="dense",
+                )
+                hybrid_rep = evaluate_retrieval(
+                    suite=suite,
+                    embedder=embedder,
+                    qdrant_store=qdrant,
+                    table_search=table_search,
+                    bm25_search=bm25_search,
+                    retrieval_mode="hybrid",
+                    rrf_k=policy.indexing.hybrid_rrf_k,
+                    hybrid_candidate_multiplier=policy.indexing.hybrid_candidate_multiplier,
+                )
+                typer.echo(
+                    json.dumps(
+                        {
+                            "dense": dense_rep.to_dict(),
+                            "hybrid_rrf": hybrid_rep.to_dict(),
+                        },
+                        indent=2,
+                        sort_keys=True,
+                    )
+                )
+                return
+
             report = evaluate_retrieval(
                 suite=suite,
                 embedder=embedder,
                 qdrant_store=qdrant,
                 table_search=table_search,
+                bm25_search=bm25_search if mode == "hybrid" else None,
+                retrieval_mode=mode,
+                rrf_k=policy.indexing.hybrid_rrf_k,
+                hybrid_candidate_multiplier=policy.indexing.hybrid_candidate_multiplier,
             )
     finally:
         engine.dispose()
@@ -1248,3 +1304,375 @@ def check_policy(
             typer.echo(f"  - {reason}")
     else:
         typer.secho("Live crawl status: CLEARED", fg=typer.colors.GREEN)
+
+
+# ── Phase 5 Operations CLI (`pdn-sync ops ...`) ──────────────────────────────
+
+
+@ops_app.command("backup")
+def ops_backup(
+    output_dir: Annotated[
+        Path | None,
+        typer.Option("--output-dir", help="Backup root directory (default PDN_BACKUP_DIR)"),
+    ] = None,
+    include_qdrant: Annotated[
+        bool,
+        typer.Option("--include-qdrant", help="Also snapshot embedded data/qdrant/ directory"),
+    ] = False,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Create a verified SQLite Online Backup (`sqlite3.Connection.backup`) + SHA-256 manifest."""
+    settings = AppSettings()
+    target_db = sqlite_path or settings.sqlite_path
+    dest_root = output_dir or settings.backup_dir
+    try:
+        res = create_online_backup(
+            sqlite_path=target_db,
+            backup_root=dest_root,
+            include_qdrant=include_qdrant,
+            qdrant_path=settings.qdrant_path,
+        )
+    except (FileNotFoundError, BackupVerificationError) as exc:
+        typer.secho(f"BACKUP FAILED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.secho(f"OK: Online backup created at {res.backup_dir}", fg=typer.colors.GREEN)
+    typer.echo(
+        json.dumps(
+            {
+                "backup_dir": str(res.backup_dir),
+                "manifest_path": str(res.manifest_path),
+                "sqlite_sha256": res.sqlite_sha256,
+                "sqlite_bytes": res.sqlite_bytes,
+                "alembic_revision": res.alembic_revision,
+                "integrity_ok": res.integrity_ok,
+                "foreign_key_errors": res.foreign_key_errors,
+                "wal_checkpoint": res.wal_checkpoint,
+                "table_counts": res.table_counts,
+                "qdrant_included": res.qdrant_included,
+                "qdrant_file_count": res.qdrant_file_count,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+
+
+@ops_app.command("verify-backup")
+def ops_verify_backup(
+    backup_dir: Annotated[Path, typer.Argument(help="Path to backup_<timestamp> directory")],
+) -> None:
+    """Verify a backup's SHA-256 manifest, PRAGMA integrity_check, and foreign_key_check."""
+    res = verify_backup(backup_dir)
+    payload = {
+        "valid": res.valid,
+        "backup_dir": str(res.backup_dir),
+        "sqlite_sha256_ok": res.sqlite_sha256_ok,
+        "integrity_ok": res.integrity_ok,
+        "foreign_key_errors": res.foreign_key_errors,
+        "qdrant_files_checked": res.qdrant_files_checked,
+        "errors": res.errors,
+    }
+    typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+    if not res.valid:
+        raise typer.Exit(code=1)
+
+
+@ops_app.command("restore")
+def ops_restore(
+    backup_dir: Annotated[Path, typer.Argument(help="Verified backup directory to restore from")],
+    confirm: Annotated[
+        bool,
+        typer.Option("--confirm", help="Required explicit confirmation before replacing SQLite DB"),
+    ] = False,
+    restore_qdrant: Annotated[
+        bool,
+        typer.Option("--restore-qdrant", help="Also restore Qdrant snapshot if present"),
+    ] = False,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Verify and atomically restore SQLite (+ optional Qdrant) while cleaning stale WAL/SHM."""
+    settings = AppSettings()
+    target_db = sqlite_path or settings.sqlite_path
+    try:
+        res = restore_online_backup(
+            backup_dir=backup_dir,
+            target_sqlite_path=target_db,
+            confirm=confirm,
+            restore_qdrant=restore_qdrant,
+            target_qdrant_path=settings.qdrant_path,
+        )
+    except (ValueError, BackupVerificationError, FileNotFoundError) as exc:
+        typer.secho(f"RESTORE REFUSED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.secho(
+        f"OK: Restored verified backup into {res.target_sqlite_path}", fg=typer.colors.GREEN
+    )
+    typer.echo(
+        json.dumps(
+            {
+                "backup_dir": str(res.backup_dir),
+                "target_sqlite_path": str(res.target_sqlite_path),
+                "restored_sha256": res.restored_sha256,
+                "integrity_ok": res.integrity_ok,
+                "qdrant_restored": res.qdrant_restored,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+
+
+@ops_app.command("check-alerts")
+def ops_check_alerts(
+    as_json: Annotated[bool, typer.Option("--json", help="Emit structured JSON output")] = False,
+    fail_on: Annotated[
+        Literal["none", "critical", "warning"],
+        typer.Option("--fail-on", help="Exit non-zero when alerts at/above this severity fire"),
+    ] = "critical",
+    skip_qdrant: Annotated[
+        bool,
+        typer.Option(
+            "--skip-qdrant", help="Skip opening embedded Qdrant (e.g. while API holds lock)"
+        ),
+    ] = False,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Evaluate freshness, backlog, FTS5/Qdrant drift, and DLQ alerts (cron/CI ready)."""
+    settings = AppSettings()
+    db_path = sqlite_path or settings.sqlite_path
+    upgrade_database(db_path)
+    engine = create_sqlite_engine(db_path)
+    qd_ok = True
+    qd_points: int | None = None
+    try:
+        if not skip_qdrant:
+            try:
+                with QdrantVectorStore(
+                    collection_name=settings.qdrant_collection,
+                    url=settings.qdrant_url,
+                    path=settings.qdrant_path,
+                ) as qdrant:
+                    qd_ok, qd_points = qdrant.health_check()
+            except Exception:
+                qd_ok = False
+                qd_points = 0
+
+        report = evaluate_alerts(
+            engine=engine,
+            policy_path=settings.ingestion_policy_file,
+            scope_path=settings.scope_file,
+            qdrant_ok=qd_ok,
+            qdrant_published_points=qd_points,
+        )
+    finally:
+        engine.dispose()
+
+    payload = {
+        "checked_at_utc": report.checked_at_utc.isoformat(),
+        "critical_count": report.critical_count,
+        "warning_count": report.warning_count,
+        "dlq_count": report.dlq_count,
+        "outbox_pending_count": report.outbox_pending_count,
+        "fts5_mismatches": report.fts5_mismatches,
+        "oldest_pending_gate_b_age_hours": report.oldest_pending_gate_b_age_hours,
+        "qdrant_ok": report.qdrant_ok,
+        "qdrant_published_points": report.qdrant_published_points,
+        "qdrant_drift_abs": report.qdrant_drift_abs,
+        "alerts": [a.model_dump() for a in report.alerts],
+    }
+
+    if as_json:
+        typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        if not report.alerts:
+            typer.secho("OK: 0 active alerts.", fg=typer.colors.GREEN)
+        else:
+            for a in report.alerts:
+                color = typer.colors.RED if a.severity == "critical" else typer.colors.YELLOW
+                typer.secho(f"[{a.severity.upper()}] {a.code}: {a.summary}", fg=color)
+                typer.echo(f"  runbook: {a.runbook_ref}")
+
+    if fail_on == "critical" and report.critical_count > 0:
+        raise typer.Exit(code=2)
+    if fail_on == "warning" and (report.critical_count > 0 or report.warning_count > 0):
+        raise typer.Exit(code=2)
+
+
+@ops_app.command("reconcile")
+def ops_reconcile(
+    fts_only: Annotated[
+        bool, typer.Option("--fts-only", help="Reconcile SQLite FTS5 only")
+    ] = False,
+    outbox_only: Annotated[
+        bool, typer.Option("--outbox-only", help="Replay durable outbox events only")
+    ] = False,
+    qdrant_only: Annotated[
+        bool, typer.Option("--qdrant-only", help="Repair Qdrant<->SQLite sync drift only")
+    ] = False,
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="Inspect without mutating")] = False,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Reconcile SQLite FTS5 indexes, durable outbox retries, and Qdrant sync drift."""
+    settings = AppSettings()
+    policy = load_ingestion_policy(settings.ingestion_policy_file)
+    db_path = sqlite_path or settings.sqlite_path
+    upgrade_database(db_path)
+    engine = create_sqlite_engine(db_path)
+    run_all = not (fts_only or outbox_only or qdrant_only)
+    out: dict[str, object] = {}
+
+    try:
+        if run_all or fts_only:
+            if dry_run:
+                out["fts5"] = {
+                    "dry_run": True,
+                    "mismatches": OpsRepository(engine).get_fts5_mismatch_counts(),
+                }
+            else:
+                fts_res = reconcile_fts5(engine)
+                out["fts5"] = {
+                    "structured_tables_synced": fts_res.structured_tables_synced,
+                    "donation_sessions_synced": fts_res.donation_sessions_synced,
+                    "knowledge_chunks_synced": fts_res.knowledge_chunks_synced,
+                    "before_mismatches": fts_res.before_mismatches,
+                    "after_mismatches": fts_res.after_mismatches,
+                }
+
+        if run_all or outbox_only or qdrant_only:
+            with QdrantVectorStore(
+                collection_name=settings.qdrant_collection,
+                url=settings.qdrant_url,
+                path=settings.qdrant_path,
+            ) as qdrant:
+                embedder = None
+                if not dry_run:
+                    pub_repo = PublicationRepository(engine)
+                    ops_repo = OpsRepository(engine)
+                    needs_embed = any(
+                        ev.event_type == "qdrant_upsert_publication"
+                        for ev in ops_repo.list_outbox_events(
+                            statuses=("pending", "failed"), due_only=True
+                        )
+                    )
+                    if needs_embed or qdrant_only:
+                        status = pub_repo.get_status_summary()
+                        model_name = (
+                            status.get("active_embedding_model") or policy.indexing.embedding_model
+                        )
+                        embedder = create_embedder(str(model_name))
+
+                if run_all or outbox_only:
+                    ob_res = reconcile_outbox(
+                        engine=engine,
+                        qdrant=qdrant,
+                        embedder=embedder,
+                        retry_policy=policy.retry,
+                        dry_run=dry_run,
+                    )
+                    out["outbox"] = {
+                        "considered": ob_res.considered,
+                        "dispatched": ob_res.dispatched,
+                        "failed_retryable": ob_res.failed_retryable,
+                        "dead_lettered": ob_res.dead_lettered,
+                        "dry_run": ob_res.dry_run,
+                        "event_outcomes": ob_res.event_outcomes,
+                    }
+
+                if run_all or qdrant_only:
+                    qd_res = reconcile_qdrant(
+                        engine=engine,
+                        qdrant=qdrant,
+                        embedder=embedder,
+                        dry_run=dry_run,
+                    )
+                    out["qdrant"] = {
+                        "sqlite_published_chunks": qd_res.sqlite_published_chunks,
+                        "qdrant_published_points_before": qd_res.qdrant_published_points_before,
+                        "qdrant_published_points_after": qd_res.qdrant_published_points_after,
+                        "repaired_publications": qd_res.repaired_publications,
+                        "deactivated_publications": qd_res.deactivated_publications,
+                        "dry_run": qd_res.dry_run,
+                    }
+    finally:
+        engine.dispose()
+
+    typer.echo(json.dumps(out, indent=2, sort_keys=True))
+
+
+@dlq_app.command("list")
+def ops_dlq_list(
+    status: Annotated[
+        Literal["dead_letter", "failed", "pending", "all"],
+        typer.Option("--status", help="Filter outbox events by status"),
+    ] = "dead_letter",
+    limit: Annotated[int, typer.Option("--limit")] = 50,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """List outbox / dead-letter queue events."""
+    settings = AppSettings()
+    db_path = sqlite_path or settings.sqlite_path
+    upgrade_database(db_path)
+    engine = create_sqlite_engine(db_path)
+    try:
+        ops_repo = OpsRepository(engine)
+        statuses = None if status == "all" else (status,)
+        rows = ops_repo.list_outbox_events(statuses=statuses, limit=limit)
+        payload = [
+            {
+                "event_id": r.event_id,
+                "event_type": r.event_type,
+                "status": r.status,
+                "dedupe_key": r.dedupe_key,
+                "publication_id": r.publication_id,
+                "resource_id": r.resource_id,
+                "attempt_count": r.attempt_count,
+                "max_attempts": r.max_attempts,
+                "last_error": r.last_error,
+                "updated_at_utc": r.updated_at_utc.isoformat(),
+                "resolved_by": r.resolved_by,
+                "resolved_note": r.resolved_note,
+            }
+            for r in rows
+        ]
+    finally:
+        engine.dispose()
+    typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+
+
+@dlq_app.command("resolve")
+def ops_dlq_resolve(
+    event_id: Annotated[str, typer.Argument(help="Outbox event ID (e.g. obx_...)")],
+    reason: Annotated[str, typer.Option("--reason", help="Audit note for resolution")] = "resolved",
+    requeue: Annotated[
+        bool,
+        typer.Option("--requeue", help="Reset to pending with attempt_count=0 for replay"),
+    ] = False,
+    reviewer: Annotated[str | None, typer.Option("--reviewer")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Mark a dead-lettered/failed outbox event as resolved or requeue it for replay."""
+    settings = AppSettings()
+    db_path = sqlite_path or settings.sqlite_path
+    upgrade_database(db_path)
+    engine = create_sqlite_engine(db_path)
+    try:
+        ops_repo = OpsRepository(engine)
+        try:
+            row = ops_repo.resolve_outbox_event(
+                event_id,
+                reviewer=reviewer or settings.operator_id,
+                note=reason,
+                requeue=requeue,
+            )
+        except KeyError as exc:
+            typer.secho(str(exc), fg=typer.colors.RED, err=True)
+            raise typer.Exit(code=1) from exc
+    finally:
+        engine.dispose()
+
+    typer.secho(
+        f"OK: {row.event_id} -> status={row.status} (by {row.resolved_by})",
+        fg=typer.colors.GREEN,
+    )

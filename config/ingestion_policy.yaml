@@ -56,6 +56,9 @@ indexing:
   chunk_target_chars: 1000
   chunk_overlap_chars: 150
   embedding_model: BAAI/bge-m3
+  retrieval_mode: hybrid
+  hybrid_rrf_k: 60
+  hybrid_candidate_multiplier: 4
 
 # Phase 4 bounded JEvents structured schedule policy (Track 2 — SQLite + FTS5 only)
 calendar:
@@ -63,3 +66,20 @@ calendar:
   max_eventdetail_pages_per_run: 200
   calendar_interval_hours: 6
   allow_past_days_grace: 1
+
+# Phase 5 bounded retry, outage recovery & observability alert policy
+retry:
+  max_attempts: 3
+  backoff_base_seconds: 2.0
+  backoff_max_seconds: 60.0
+  jitter_ratio: 0.25
+
+observability:
+  homepage_overdue_hours: 12
+  calendar_overdue_hours: 18
+  site_overdue_hours: 48
+  discovery_overdue_days: 14
+  max_pending_gate_b: 50
+  max_pending_gate_b_age_hours: 168
+  max_quarantined_gate_b: 0
+  max_dlq_items: 0

@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -77,6 +77,11 @@ class AppSettings(BaseSettings):
     embedding_model: str = Field(default="BAAI/bge-m3", min_length=1)
     api_host: str = Field(default="127.0.0.1", min_length=1)
     api_port: int = Field(default=8000, ge=1, le=65535)
+
+    # Phase 5 structured logging & SQLite backup directory
+    log_format: Literal["json", "console"] = Field(default="json")
+    log_level: str = Field(default="INFO", min_length=1)
+    backup_dir: Path = Field(default=Path("data/backups"))
 
     max_concurrency_per_host: int = Field(default=1, ge=1, le=2)
     delay_min_seconds: float = Field(default=2.0, ge=2.0)

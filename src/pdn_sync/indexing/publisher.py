@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import fnmatch
+import time
+import uuid
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -17,7 +19,9 @@ from pdn_sync.extractors.contracts import ExtractionResult
 from pdn_sync.indexing.chunker import build_chunks_for_artifact
 from pdn_sync.indexing.embedder import EmbeddingBackend, create_embedder
 from pdn_sync.indexing.qdrant_store import QdrantChunkPoint, QdrantVectorStore
+from pdn_sync.ops.retry import RetryExhaustedError, execute_with_retry
 from pdn_sync.persistence.db import create_sqlite_engine, upgrade_database
+from pdn_sync.persistence.ops_repo import OpsRepository
 from pdn_sync.persistence.publication_repo import (
     PublicationRepository,
     RetirementReconcileResult,
@@ -48,6 +52,7 @@ class PublishRunSummary:
     schedule_sessions_published: int = 0
     superseded_publications: int = 0
     pending_change_updates: int = 0
+    outbox_enqueued: int = 0
     published_ids: list[str] = field(default_factory=list)
     blocked_details: list[tuple[str, str]] = field(default_factory=list)
     retirement: RetirementReconcileResult | None = None
@@ -96,6 +101,7 @@ class PublicationService:
         qdrant_store: QdrantVectorStore | None = None,
         embedder: EmbeddingBackend | None = None,
         settings: AppSettings | None = None,
+        sleep_fn: Callable[[float], None] = time.sleep,
     ) -> None:
         self.sqlite_path = sqlite_path
         self.scope_path = scope_path
@@ -103,6 +109,7 @@ class PublicationService:
         self.settings = settings or AppSettings()
         self._external_qdrant = qdrant_store
         self._external_embedder = embedder
+        self._sleep_fn = sleep_fn
         upgrade_database(sqlite_path)
 
     def _open_qdrant(self, collection_name: str) -> tuple[QdrantVectorStore, bool]:
@@ -137,6 +144,8 @@ class PublicationService:
         stage_repo = StagingRepository(engine)
         pub_repo = PublicationRepository(engine)
         sched_repo = ScheduleRepository(engine)
+        ops_repo = OpsRepository(engine)
+        corr_id = f"pubrun_{uuid.uuid4().hex[:12]}"
 
         summary = PublishRunSummary(
             dry_run=dry_run,
@@ -217,9 +226,6 @@ class PublicationService:
                     if chunking.chunks:
                         if embedder is None:
                             embedder = create_embedder(model_name)
-                        if not collection_ready:
-                            qdrant.ensure_collection(embedder.dimension)
-                            collection_ready = True
                         vectors = embedder.embed_documents([c.text for c in chunking.chunks])
 
                     effective_model_name = (
@@ -308,17 +314,102 @@ class PublicationService:
                                     payload=payload,
                                 )
                             )
-                        summary.chunks_upserted += qdrant.upsert_points(points)
-                        pub_repo.mark_chunks_qdrant_synced(outcome.publication_id, now)
+                        try:
+                            if not collection_ready and embedder is not None:
+                                dim_val = embedder.dimension
+
+                                def _ensure_col(dim: int = dim_val) -> None:
+                                    qdrant.ensure_collection(dim)
+
+                                execute_with_retry(
+                                    _ensure_col,
+                                    task_type="qdrant_ensure_collection",
+                                    policy=policy.retry,
+                                    ops_repo=ops_repo,
+                                    resource_id=staged.resource_id,
+                                    version_id=staged.resource_version_id,
+                                    correlation_id=corr_id,
+                                    sleep_fn=self._sleep_fn,
+                                )
+                                collection_ready = True
+
+                            def _upsert_pts(pts: list[QdrantChunkPoint] = points) -> int:
+                                return qdrant.upsert_points(pts)
+
+                            upserted = execute_with_retry(
+                                _upsert_pts,
+                                task_type="publish_qdrant_upsert",
+                                policy=policy.retry,
+                                ops_repo=ops_repo,
+                                resource_id=staged.resource_id,
+                                version_id=staged.resource_version_id,
+                                correlation_id=corr_id,
+                                sleep_fn=self._sleep_fn,
+                            )
+                            summary.chunks_upserted += upserted
+                            pub_repo.mark_chunks_qdrant_synced(outcome.publication_id, now)
+                        except RetryExhaustedError as exc:
+                            # SQLite published state stays intact; defer Qdrant sync via outbox
+                            ops_repo.enqueue_outbox_event(
+                                event_type="qdrant_upsert_publication",
+                                dedupe_key=f"qdrant_upsert:{outcome.publication_id}",
+                                payload={
+                                    "publication_id": outcome.publication_id,
+                                    "qdrant_collection": collection,
+                                },
+                                correlation_id=corr_id,
+                                resource_id=staged.resource_id,
+                                artifact_id=staged.artifact_id,
+                                publication_id=outcome.publication_id,
+                                max_attempts=policy.retry.max_attempts,
+                                initial_status="failed",
+                                initial_error=str(exc),
+                                initial_attempt_count=1,
+                                now_utc=now,
+                            )
+                            summary.outbox_enqueued += 1
 
                     # Deactivate any superseded prior publications in Qdrant
+                    now_iso = now.isoformat()
                     for old_pub_id in outcome.superseded_publication_ids:
-                        qdrant.mark_publication_status(
-                            old_pub_id,
-                            status="superseded",
-                            valid_until=now.isoformat(),
-                        )
-                        summary.superseded_publications += 1
+                        try:
+
+                            def _mark_superseded(pid: str = old_pub_id, vu: str = now_iso) -> None:
+                                qdrant.mark_publication_status(
+                                    pid,
+                                    status="superseded",
+                                    valid_until=vu,
+                                )
+
+                            execute_with_retry(
+                                _mark_superseded,
+                                task_type="publish_qdrant_supersede",
+                                policy=policy.retry,
+                                ops_repo=ops_repo,
+                                resource_id=staged.resource_id,
+                                correlation_id=corr_id,
+                                sleep_fn=self._sleep_fn,
+                            )
+                            summary.superseded_publications += 1
+                        except RetryExhaustedError as exc:
+                            ops_repo.enqueue_outbox_event(
+                                event_type="qdrant_retire_publication",
+                                dedupe_key=f"qdrant_retire:{old_pub_id}:superseded",
+                                payload={
+                                    "publication_id": old_pub_id,
+                                    "status": "superseded",
+                                    "valid_until": now_iso,
+                                },
+                                correlation_id=corr_id,
+                                resource_id=staged.resource_id,
+                                publication_id=old_pub_id,
+                                max_attempts=policy.retry.max_attempts,
+                                initial_status="failed",
+                                initial_error=str(exc),
+                                initial_attempt_count=1,
+                                now_utc=now,
+                            )
+                            summary.outbox_enqueued += 1
 
                     summary.published += 1
                     summary.tables_published += len(outcome.table_ids)

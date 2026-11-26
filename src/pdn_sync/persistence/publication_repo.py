@@ -88,6 +88,48 @@ def _delete_table_from_fts(session: Session, table_id: str) -> None:
     )
 
 
+def _delete_publication_chunks_from_fts(session: Session, publication_id: str) -> None:
+    session.execute(
+        text("DELETE FROM knowledge_chunks_fts_u61 WHERE publication_id = :pid"),
+        {"pid": publication_id},
+    )
+
+
+def _insert_chunk_into_fts(
+    session: Session,
+    *,
+    chunk_id: str,
+    publication_id: str,
+    category: str,
+    language: str,
+    title: str,
+    section: str,
+    chunk_text: str,
+) -> None:
+    session.execute(
+        text("DELETE FROM knowledge_chunks_fts_u61 WHERE chunk_id = :cid"),
+        {"cid": chunk_id},
+    )
+    session.execute(
+        text(
+            """
+            INSERT INTO knowledge_chunks_fts_u61
+                (chunk_id, publication_id, category, language, title, section, text)
+            VALUES (:cid, :pid, :cat, :lang, :title, :sec, :txt)
+            """
+        ),
+        {
+            "cid": chunk_id,
+            "pid": publication_id,
+            "cat": category,
+            "lang": language,
+            "title": title,
+            "sec": section,
+            "txt": chunk_text,
+        },
+    )
+
+
 def _insert_table_into_fts(
     session: Session,
     *,
@@ -310,6 +352,7 @@ class PublicationRepository:
                 )
                 for tid in old_tables:
                     _delete_table_from_fts(session, tid)
+                _delete_publication_chunks_from_fts(session, existing.publication_id)
                 session.delete(existing)
                 session.flush()
 
@@ -404,7 +447,7 @@ class PublicationRepository:
             session.add(doc_row)
             session.flush()
 
-            # Insert KnowledgeChunkRows
+            # Insert KnowledgeChunkRows + FTS5 entries (for optional hybrid BM25 retrieval)
             chunk_ids: list[str] = []
             for ch in chunks:
                 session.add(
@@ -420,6 +463,16 @@ class PublicationRepository:
                         char_count=len(ch.text),
                         qdrant_synced_at_utc=None,
                     )
+                )
+                _insert_chunk_into_fts(
+                    session,
+                    chunk_id=ch.chunk_id,
+                    publication_id=pub_id,
+                    category=art.category,
+                    language=ch.language,
+                    title=(title or "").strip(),
+                    section=(ch.section or "").strip(),
+                    chunk_text=ch.text,
                 )
                 chunk_ids.append(ch.chunk_id)
 
@@ -528,6 +581,8 @@ class PublicationRepository:
             t.status = new_status
             t.valid_until_utc = valid_until_utc
             _delete_table_from_fts(session, t.table_id)
+
+        _delete_publication_chunks_from_fts(session, pub_row.publication_id)
 
         art = session.get(StagedArtifactRow, pub_row.artifact_id)
         if art is not None and art.review_status == ReviewStatus.PUBLISHED.value:

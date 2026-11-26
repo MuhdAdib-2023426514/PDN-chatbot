@@ -38,6 +38,20 @@ exclusions:
     - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/56
     - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/86
     - https://pdn.gov.my/v2/images/Borang2025/Blood_Donor_Registration_Form_Icon.jpg
+    - https://pdn.gov.my/v2/images/2_1ab.jpg
+    - https://pdn.gov.my/v2/images/4_2ab.jpg
+    - https://pdn.gov.my/v2/images/5_1abc.jpg
+    - https://pdn.gov.my/v2/images/a.png
+    - https://pdn.gov.my/v2/images/hubungikami/National_Blood_Centre.jpg
+    - https://pdn.gov.my/v2/images/hubungikami/Pusat_Darah_Negara_Midvalley_Donation_Suite.jpg
+    - https://pdn.gov.my/v2/images/hubungikami/Suite_Derma_Darah_Puspanita.jpg
+    - https://pdn.gov.my/v2/images/img_space_amp.jpg
+    - https://pdn.gov.my/v2/images/perkhidmatan/ukd7.jpeg
+    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/29-direktori-ketua-seksyen/20-cik-elaramzah-binti-adnan
+    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/29-direktori-ketua-seksyen/22-dr-thane-moze-a-p-darumalinggam-ketua-seksyen-pengurusan-penderma
+    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/29-direktori-ketua-seksyen/24-dr-azmanira-binti-aziz
+    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/29-direktori-ketua-seksyen/89-dr-hazfizah-md-ali
+    - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/8-direktori-pegawai/8-pn-roslinah-binti-ab-ghani
   patterns:
     # Phase 4 JEvents boundary: exclude runaway/duplicate calendar views while allowing
     # ONLY bounded monthcalendar (current + 3 months) and eventdetail approvals below.
@@ -2255,7 +2269,8 @@ approvals:
       - id: pattern-jevents-monthcalendar-bounded
         pattern: /v2/index.php/component/jevents/monthcalendar/*/*/*
         resource_type: page
-        reason: 'Phase 4 bounded JEvents monthcalendar seed (rolling current + 3 months in Asia/Kuala_Lumpur)'
+        reason: 'Phase 4 bounded JEvents monthcalendar seed (rolling current + 3 months
+          in Asia/Kuala_Lumpur)'
         max_matches: 12
         check_interval: 6h
         supersession: none
@@ -2264,7 +2279,8 @@ approvals:
       - id: pattern-jevents-eventdetail-bounded
         pattern: /v2/index.php/component/jevents/eventdetail/*/*/*
         resource_type: page
-        reason: 'Phase 4 bounded JEvents eventdetail structured blood donation schedule pages (SQLite + FTS5 only)'
+        reason: 'Phase 4 bounded JEvents eventdetail structured blood donation schedule
+          pages (SQLite + FTS5 only)'
         max_matches: 250
         check_interval: 6h
         supersession: none
@@ -2273,7 +2289,8 @@ approvals:
       - id: pattern-jevents-eventdetail-short
         pattern: /v2/index.php/component/jevents/eventdetail/*/*
         resource_type: page
-        reason: 'Phase 4 bounded JEvents eventdetail short-path structured blood donation schedule pages (SQLite + FTS5 only)'
+        reason: 'Phase 4 bounded JEvents eventdetail short-path structured blood donation
+          schedule pages (SQLite + FTS5 only)'
         max_matches: 250
         check_interval: 6h
         supersession: none

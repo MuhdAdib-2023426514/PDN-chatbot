@@ -74,12 +74,12 @@ One immutable UTF-8 JSON artifact + Markdown (`.md`) companion per approved reso
 - Content: `content_type`, `title`, `language`, `text_blocks`, `tables`, `media_refs` (recording unapproved inline images with `scope_status: pending|excluded`), `ocr_lines` (with boxes & confidences when applicable), `structured_events`.
 - Quality & review: `confidence`, `critical_fact_flags`, `warnings`, `validation_status` (`valid` | `invalid` | `needs_review`), `review_status` (`pending_review` | `approved` | `rejected` | `quarantined` | `published` | `superseded` | `retired`).
 
-## 4. Phase 3–4 Read-Only Chatbot API Contract
+## 4. Phase 3–5 Read-Only Chatbot API & Observability Contract
 
-All endpoints expose **only** published, non-superseded, non-retired records (`status == "published"`), bound to `127.0.0.1:8000` by default:
+All endpoints expose **only** published, non-superseded, non-retired records (`status == "published"`), bound to `127.0.0.1:8000` by default, and return an `X-Request-ID` correlation header:
 
 ### `GET /v1/knowledge/search?q=<query>&lang=<ms|en|any>&category=<optional>&limit=<1..20>`
-Dense multilingual vector retrieval (`BAAI/bge-m3`, 1024d cosine, Qdrant `pdn_knowledge_v1`):
+Hybrid multilingual retrieval (`BAAI/bge-m3` 1024d cosine + SQLite FTS5 `knowledge_chunks_fts_u61` BM25 fused via Reciprocal Rank Fusion `k=60`, configurable via `indexing.retrieval_mode: dense | hybrid`):
 - Response envelope: `{query, lang, category, total, results[]}`
 - Each item in `results[]`:
   - `chunk_id`, `text`, `score`, `title`, `section`, `category`, `language`, `source_url`, `asset_url`, `content_type`, `last_verified_at`, `source_effective_date`, `valid_until`, `pending_change`.
@@ -97,10 +97,14 @@ Authoritative SQLite + FTS5 (`unicode61 remove_diacritics 2` + `trigram` + bound
 - Each item in `results[]`:
   - `event_id`, `session_id`, `organizer`, `location_name`, `address`, `city`, `state`, `event_date`, `time_start`, `time_end`, `session_label`, `target_donors`, `raw_cells`, `status` (`listed` | `amended` | `not_confirmed` | `removed_from_source` | `canceled_if_explicit`), `source_url`, `last_verified_at`, `pending_change`.
 
-### `GET /healthz` and `GET /v1/status`
+### `GET /healthz`, `GET /v1/status`, and `GET /metrics`
 - `/healthz`: `{status, sqlite, qdrant, qdrant_mode, qdrant_published_points}`
-- `/v1/status`: `{published_documents, published_chunks, published_tables, superseded_documents, retired_documents, pending_change_documents, approved_unpublished_artifacts, pending_gate_b, quarantined_gate_b, active_embedding_model, active_qdrant_collection, qdrant_mode, qdrant_published_points, last_completed_runs_by_profile}`
+- `/v1/status`: `{published_documents, published_chunks, published_tables, published_donation_events, published_donation_sessions, superseded_documents, retired_documents, pending_change_documents, approved_unpublished_artifacts, pending_gate_b, quarantined_gate_b, active_embedding_model, active_qdrant_collection, retrieval_mode, qdrant_mode, qdrant_published_points, dlq_count, outbox_pending_count, fts5_mismatches, oldest_pending_gate_b_age_hours, alerts[], last_completed_runs_by_profile}`
+- `/metrics`: Localhost-only Prometheus text exposition (`text/plain; version=0.0.4`) exposing `pdn_sync_*` operational gauges and API request counters/latency histograms.
 
 ### Qdrant Point Payload Contract (`pdn_knowledge_v1`)
 Deterministic UUIDv5 point ID derived from `pdn-sync:{resource_id}:{resource_version_id}:{chunk_index}` with payload fields:
 `chunk_id`, `document_id`, `publication_id`, `resource_id`, `resource_version_id`, `artifact_id`, `source_url`, `asset_url`, `title`, `section`, `category`, `language`, `content_type`, `last_verified_at`, `source_effective_date`, `valid_from`, `valid_until`, `pending_change`, `status`, `text`.
+
+### Phase 5 Online Backup Manifest Contract (`data/backups/backup_<UTC>/manifest.json`)
+`{schema_version, created_at_utc, source_sqlite_path, sqlite_file, sqlite_sha256, sqlite_bytes, alembic_revision, integrity_ok, foreign_key_errors, wal_checkpoint, table_counts, qdrant_included, qdrant_files}`

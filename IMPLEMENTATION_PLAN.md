@@ -8,8 +8,8 @@
 - [x] **Phase 1 — Discovery-only URL & asset inventory + Gate A approval (JEvents excluded)** *(live discovery `disc_20261124T055806Z_da8f19c7` and Gate A completed 2026-11-24)*
 - [x] **Phase 2 — Approved multimodal extraction & Gate B staging (2a HTML, 2b PDFs/docs, 2c Posters/OCR)** *(code, 102/102 tests, pilot `ext_20261125T031828Z_7fc76696`, full 736-item resumable run `ext_20261126T001234Z_f1afbfcd` [721 staged, 14 HTTP 404s, 1 PNG transcribed], and Gate B human triage [531 approved, 214 rejected, 0 unresolved] completed 2026-11-26)*
 - [x] **Phase 3 — Orchestration ADR, approved publication & chatbot read API** *(completed 2026-11-26: `docs/decisions/ADR-orchestration.md` approved; Alembic `0003_phase3_publication_and_fts5`; 40-question Malay/English `tests/eval/questions.yaml` approved; `BAAI/bge-m3` won benchmark [Hit@1 72.5%, Hit@5 85.0%, MRR@5 0.7875, Fact Recall@5 92.5%, Citation 100%] over `multilingual-e5-small`; all 531 approved artifacts published [4,730 Qdrant points, 1,021 SQLite+FTS5 tables]; live read-only FastAPI API & 112/112 tests passing)*
-- [x] **Phase 4 — Structured blood donation schedules (JEvents → SQLite + FTS5)** *(implemented & offline-verified 2026-11-26: Gate A bounded JEvents rules in `config/crawl_scope.yaml`; Alembic `0004_phase4_donation_schedules`; `jevents_html_bs4 v1.1.0` multi-session parser + `ScheduleRepository` + `GET /v1/events` + 6h `calendar` worker; `120/120` tests passing; live bounded sync `cal_20261126T081755Z_e74139f6` + offline v1.1.0 reextract staged `47` `eventdetail` pages / `376` sessions [`2026-10-31`..`2026-12-06`] with `0` time anomalies — awaiting Gate B human approval before live `/v1/events` publish)*
-- [ ] **Phase 5 — Reliability, observability, and operations**
+- [x] **Phase 4 — Structured blood donation schedules (JEvents → SQLite + FTS5)** *(completed & live-published 2026-11-26: Gate A bounded JEvents rules in `config/crawl_scope.yaml`; Alembic `0004_phase4_donation_schedules`; `jevents_html_bs4 v1.1.0` multi-session parser + `ScheduleRepository` + `GET /v1/events` + 6h `calendar` worker; live bounded sync `cal_20261126T081755Z_e74139f6` + Gate B approval + idempotent publish populated `47` `donation_events` / `376` `donation_sessions` [`2026-10-31`..`2026-12-06`] with `0` Qdrant schedule vectors added; `120/120` tests passing)*
+- [x] **Phase 5 — Reliability, observability, and operations** *(completed 2026-11-26: Alembic `0005_phase5_reliability_and_ops` [`task_attempts`, `outbox_events`, `knowledge_chunks_fts_u61`]; bounded retry & durable outbox/DLQ replay; SQLite online backup/verify/restore with WAL recovery; `structlog==26.1.0` JSON logging + `prometheus-client==0.26.0` localhost `GET /metrics` + actionable `alerts[]` in `/v1/status` & `pdn-sync ops check-alerts`; Dense vs Hybrid RRF benchmark on `tests/eval/questions.yaml` proved Hybrid winner [Hit@5 `87.5% → 95.0%`, Fact Recall@5 `92.5% → 97.5%`, MRR@5 `0.7917 → 0.8071`, Citation `100%`], enabled `retrieval_mode: hybrid`; 14 Phase 2 HTTP-404 URLs excluded; `docs/architecture.md` & `docs/operations.md` authored; `130/130` tests, `mypy --strict` across `93` files, `ruff` clean)*
 
 ---
 
@@ -40,8 +40,10 @@ Verified via `uv sync --all-extras` on macOS Apple Silicon (`arm64`) on `2026-11
 | `fastapi` / `uvicorn` | `0.165.0` / `0.54.0` | Phase 3 | Read-only versioned chatbot HTTP API (`127.0.0.1:8000` default) |
 | `sentence-transformers` | `6.3.0` | Phase 3 | Local multilingual embeddings (`BAAI/bge-m3` pinned winner, fp16 on Apple Silicon MPS) |
 | `apscheduler` | `3.11.3` | Phase 3 | Single-process scheduled worker (`BlockingScheduler`, `Asia/Kuala_Lumpur`, `max_instances=1`) |
-| `rapidfuzz` | `3.14.6` | Phase 3 | Bounded typo-tolerant fallback ranking for Malay/English SQLite FTS5 table search |
-| `pytest` / `ruff` / `mypy` | `9.2.0` / `0.17.6` / `2.4.1` | Phase 0–3 | Unit/integration tests (`112/112`), lint/format, strict static type checking (`74` files) |
+| `rapidfuzz` | `3.14.6` | Phase 3 | Bounded typo-tolerant fallback ranking for Malay/English SQLite FTS5 table/event search |
+| `prometheus-client` | `0.26.0` | Phase 5 | Isolated `CollectorRegistry` + localhost-only `GET /metrics` exposition |
+| `structlog` | `26.1.0` | Phase 5 | Structured JSON logging with correlation `contextvars` and PII/secret redaction |
+| `pytest` / `ruff` / `mypy` | `9.2.0` / `0.17.6` / `2.4.1` | Phase 0–5 | Unit/integration tests (`130/130`), lint/format, strict static type checking (`93` files) |
 
 ---
 
@@ -85,13 +87,22 @@ Captured from real live full-corpus extraction (`ext_20261126T001234Z_f1afbfcd` 
 - **Phase 4 (2026-11-26):**
   - Dedicated Gate A JEvents boundary applied to `config/crawl_scope.yaml` (bounded `monthcalendar` current + 3 months & `eventdetail` patterns; runaway views `eventsbyweek/day/year/month`, `icalrepeat`, `search`, `?option=com_jevents*` remain hard-excluded).
   - Alembic `0004_phase4_donation_schedules` (`donation_events`, `donation_sessions`, B-tree indexes verified via `EXPLAIN QUERY PLAN`, `donation_sessions_fts_u61`, `donation_sessions_fts_tri`).
-  - Live bounded sync (`cal_20261126T081755Z_e74139f6`) across `2026/11`–`2027/02`: `4/4` months fetched cleanly, `47/47` `eventdetail` pages captured into `LocalBlobStore`. Live audit caught & fixed 3 real PDN calendar quirks in `jevents_html_bs4 v1.1.0` (spaced two-digit hours `1 1 .00 PAGI` / `1 0 .00 PAGI`, authoritative `.jev_evdt_summary` date overriding body typo on `/2840/`, and multi-day `From..To` range expansion on `/2780/`). Offline re-extract produced **`47` pending artifacts / `376` sessions (`2026-10-31`..`2026-12-06`) with `0` time anomalies**, paused at Gate B for owner review.
+  - Live bounded sync (`cal_20261126T081755Z_e74139f6`) across `2026/11`–`2027/02`: `4/4` months fetched cleanly, `47/47` `eventdetail` pages captured into `LocalBlobStore`. Live audit caught & fixed 3 real PDN calendar quirks in `jevents_html_bs4 v1.1.0` (spaced two-digit hours `1 1 .00 PAGI` / `1 0 .00 PAGI`, authoritative `.jev_evdt_summary` date overriding body typo on `/2840/`, and multi-day `From..To` range expansion on `/2780/`). All `47` artifacts (`376` sessions across `2026-10-31`..`2026-12-06`, `0` time anomalies) were approved at Gate B and published cleanly to SQLite + FTS5 (`0` Qdrant schedule points added; idempotent re-run `skipped_idempotent=578`).
   - Static checks & tests: `ruff format --check`, `ruff check`, `mypy --strict src tests` (`80` files, `0` issues), `pytest` (`120/120` passed).
+- **Phase 5 (2026-11-26):**
+  - Alembic `0005_phase5_reliability_and_ops` (`task_attempts`, `outbox_events`, `knowledge_chunks_fts_u61`) applied live; `ops reconcile --fts-only` synced `4,730` chunks, `1,068` tables, and `376` donation sessions with `0` FTS5 mismatches.
+  - Measured Dense vs. Hybrid RRF retrieval benchmark on the live `40`-question `tests/eval/questions.yaml` suite (`BAAI/bge-m3`, fp16 MPS, `4,730` chunks, zero extra ML models):
+    - **Dense only (`BAAI/bge-m3`):** Hit@1 `72.5%`, Hit@5 `87.5%`, MRR@5 `0.7917`, Fact Recall@5 `92.5%`, Citation `100.0%`, p50 `69.0 ms`, p95 `181.8 ms`.
+    - **Hybrid RRF (`BAAI/bge-m3` + SQLite FTS5 BM25 `k=60` — Enabled Winner):** Hit@1 `70.0%`, **Hit@5 `95.0%` (`+7.5%`)**, **MRR@5 `0.8071` (`+0.0154`)**, **Fact Recall@5 `97.5%` (`+5.0%`)**, Citation **`100.0%`**, p50 **`78.9 ms`**, p95 **`130.1 ms`**.
+  - Excluded `14` confirmed Phase 2 HTTP-404 URLs (`9` images + `5` staff profiles) in `config/crawl_scope.yaml` via `ScopeManager` (`scope validate` passed).
+  - Verified live SQLite online backup (`data/backups/backup_20261126T093058Z`, `31.75 MB`, `integrity_ok=true`, `foreign_key_errors=0`, SHA-256 verified), `GET /metrics`, `GET /v1/status` (`alerts[]`), and `pdn-sync ops check-alerts`.
+  - Authored `docs/architecture.md` and `docs/operations.md`; updated `README.md`, `docs/data-contracts.md`, and `.env.example`.
+  - Static checks & tests: `ruff format --check src tests`, `ruff check src tests`, `mypy --strict src tests` (`93` files, `0` issues), `pytest` (`130/130` passed).
 
 ---
 
-## Open Blockers & Risks Before Phase 5
+## Operational Notes & Known Boundaries
 
-- **Gate B human review ready for Phase 4 schedules:** `47` validated `donation_schedule` artifacts (`376` sessions across `2026-10-31`..`2026-12-06`, `0` quarantined, `0` time anomalies) are staged under `data/extracted/donation_schedules/` awaiting owner approval before publishing live to `GET /v1/events`.
-- **14 previously-approved Track 1 URLs returned HTTP `404` during Phase 2 live extraction** (`5` staff-directory leaf URLs + `9` images); can optionally be excluded in `config/crawl_scope.yaml`.
-- **Embedded Qdrant file-lock boundary:** use `compose.yaml --profile qdrant` with `PDN_QDRANT_URL=http://127.0.0.1:6333` when running `pdn-sync worker start` concurrently with `pdn-sync api serve`.
+- **All 5 phases (0–5) complete.** All explicit acceptance criteria in `AGENTS.md` §15 are verified with deterministic tests and live evidence.
+- **Embedded Qdrant file-lock boundary:** use `compose.yaml --profile qdrant` with `PDN_QDRANT_URL=http://127.0.0.1:6333` when running `pdn-sync worker start` concurrently with `pdn-sync api serve` (or pass `--skip-qdrant` to `pdn-sync ops check-alerts`).
+- **Live crawl defaults remain fail-closed** unless `PDN_LIVE_CRAWL_ENABLED=true`, `PDN_SOURCE_POLICY_ACKNOWLEDGED=true`, and `PDN_CONTACT_EMAIL` are configured in `.env`.

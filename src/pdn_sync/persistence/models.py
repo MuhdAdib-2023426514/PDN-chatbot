@@ -501,3 +501,60 @@ class DonationSessionRow(Base):
     pending_change: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     superseded_by_session_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+
+class TaskAttemptRow(Base):
+    __tablename__ = "task_attempts"
+    __table_args__ = (
+        Index("ix_task_attempts_run_created", "run_id", "created_at_utc"),
+        Index("ix_task_attempts_type_status", "task_type", "status", "created_at_utc"),
+        Index("ix_task_attempts_resource_created", "resource_id", "created_at_utc"),
+    )
+
+    attempt_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    run_id: Mapped[str | None] = mapped_column(
+        String(64),
+        ForeignKey("sync_runs.run_id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    task_type: Mapped[str] = mapped_column(String(48), nullable=False)
+    resource_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    version_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    correlation_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    attempt_number: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    error_class: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    next_retry_at_utc: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class OutboxEventRow(Base):
+    __tablename__ = "outbox_events"
+    __table_args__ = (
+        Index("ix_outbox_events_status_retry", "status", "next_retry_at_utc"),
+        Index("ix_outbox_events_type_status", "event_type", "status"),
+    )
+
+    event_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    dedupe_key: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
+    resource_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    artifact_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    publication_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    correlation_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    payload_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
+    attempt_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    max_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
+    next_retry_at_utc: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    resolved_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    resolved_note: Mapped[str | None] = mapped_column(Text, nullable=True)

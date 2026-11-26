@@ -60,22 +60,33 @@ uv run pdn-sync stage approve --category donation_schedule --dry-run
 uv run pdn-sync publish --approved-only --execute
 uv run pdn-sync worker run-once --profile calendar --live
 
-# 8. Run quality checks & test suite
-uv run ruff format --check .
-uv run ruff check .
-uv run mypy src tests
+# 8. Phase 5: Reliability, observability, online backup/restore, alerts & hybrid eval
+uv run pdn-sync ops check-alerts --fail-on critical
+uv run pdn-sync ops backup
+uv run pdn-sync ops verify-backup data/backups/backup_<TIMESTAMP>
+uv run pdn-sync ops restore data/backups/backup_<TIMESTAMP> --confirm
+uv run pdn-sync ops reconcile --dry-run
+uv run pdn-sync ops dlq list --status dead_letter
+uv run pdn-sync eval run --mode compare --questions tests/eval/questions.yaml
+
+# 9. Run quality checks & test suite
+uv run ruff format --check src tests
+uv run ruff check src tests
+uv run mypy --strict src tests
 uv run pytest -v
 ```
 
 ## Key Documents & Configs
 
 - [AGENTS.md](AGENTS.md) — Architecture, non-negotiable rules, contracts, and phased rollout gates
-- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Stage checklist, verified package versions, Phase 2–3 benchmarks, and risks
+- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Stage checklist, verified package versions, Phase 2–5 benchmarks, and risks
+- [docs/architecture.md](docs/architecture.md) — System architecture diagrams, two-gate/two-track boundaries, storage ownership, and API summary
+- [docs/operations.md](docs/operations.md) — Operator runbooks: alert triage, SQLite online backup/restore, WAL recovery, outage/DLQ replay, and Docker Qdrant
 - [docs/decisions/ADR-orchestration.md](docs/decisions/ADR-orchestration.md) — Phase 3 orchestration decision record (single worker + SQLite WAL + dual-mode Qdrant)
 - [docs/source-policy.md](docs/source-policy.md) — Live verification evidence, PDPA guidance, and 5-point clearance checklist
 - [docs/crawl-scope-review.md](docs/crawl-scope-review.md) — Gate A reviewer workflow for `config/crawl_scope.yaml`
 - [docs/extraction-review.md](docs/extraction-review.md) — Gate B staging, batch approval, quarantine override, and `reextract` guide
-- [docs/data-contracts.md](docs/data-contracts.md) — `semantic_hash` specification + golden vectors, inventory, staging, Qdrant payload, and API contracts
+- [docs/data-contracts.md](docs/data-contracts.md) — `semantic_hash` specification + golden vectors, inventory, staging, Qdrant payload, and API/metrics contracts
 - [config/crawl_scope.yaml](config/crawl_scope.yaml) — Human-owned Gate A scope authority (never overwritten by discovery)
-- [config/ingestion_policy.yaml](config/ingestion_policy.yaml) — Gate B review mode, critical-fact rules, OCR thresholds, and indexing policy
+- [config/ingestion_policy.yaml](config/ingestion_policy.yaml) — Gate B review mode, critical-fact rules, OCR thresholds, hybrid retrieval, retry & alert policies
 - [tests/eval/questions.yaml](tests/eval/questions.yaml) — Owner-approved 40-question Malay/English retrieval evaluation suite

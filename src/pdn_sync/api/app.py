@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+import time
+import uuid
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from typing import Annotated, Literal
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request, Response
 from sqlalchemy import text
 
 from pdn_sync.api.schemas import (
@@ -20,13 +22,18 @@ from pdn_sync.api.schemas import (
     TableSearchResponse,
 )
 from pdn_sync.config import AppSettings, load_ingestion_policy
+from pdn_sync.domain.policy import IngestionPolicyConfig
 from pdn_sync.indexing.embedder import EmbeddingBackend, create_embedder
 from pdn_sync.indexing.qdrant_store import QdrantVectorStore
 from pdn_sync.persistence.db import create_sqlite_engine, upgrade_database
 from pdn_sync.persistence.publication_repo import PublicationRepository
 from pdn_sync.persistence.schedule_repo import ScheduleRepository
 from pdn_sync.search.events import DonationEventSearchService
+from pdn_sync.search.hybrid import ChunkBM25SearchService, fuse_rrf
 from pdn_sync.search.tables import StructuredTableSearchService
+from pdn_sync.telemetry.alerts import evaluate_alerts
+from pdn_sync.telemetry.logging import log_context
+from pdn_sync.telemetry.metrics import MetricsManager
 
 
 def create_app(
@@ -43,6 +50,14 @@ def create_app(
     sched_repo = ScheduleRepository(engine)
     table_search = StructuredTableSearchService(engine)
     event_search = DonationEventSearchService(engine)
+    bm25_search = ChunkBM25SearchService(engine)
+    metrics = MetricsManager()
+
+    def _load_policy() -> IngestionPolicyConfig:
+        try:
+            return load_ingestion_policy(cfg.ingestion_policy_file)
+        except Exception:
+            return IngestionPolicyConfig()
 
     owns_qdrant = qdrant_store is None
     active_qdrant: QdrantVectorStore | None = qdrant_store
@@ -90,6 +105,43 @@ def create_app(
         lifespan=lifespan,
     )
 
+    @app.middleware("http")
+    async def observe_requests(
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
+        corr_id = request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
+        t0 = time.monotonic()
+        with log_context(correlation_id=corr_id):
+            response = await call_next(request)
+        elapsed = time.monotonic() - t0
+        response.headers["X-Request-ID"] = corr_id
+        metrics.observe_request(
+            endpoint=request.url.path,
+            status_code=response.status_code,
+            duration_seconds=elapsed,
+        )
+        return response
+
+    @app.get("/metrics", include_in_schema=False)
+    def prometheus_metrics() -> Response:
+        qd = _get_qdrant()
+        qd_ok, qd_count = qd.health_check()
+        policy = _load_policy()
+        alert_report = evaluate_alerts(
+            engine=engine,
+            policy=policy,
+            scope_path=cfg.scope_file,
+            qdrant_ok=qd_ok,
+            qdrant_published_points=qd_count,
+        )
+        metrics.refresh_from_state(
+            engine=engine,
+            alert_report=alert_report,
+            scope_path=cfg.scope_file,
+        )
+        payload, content_type = metrics.render_prometheus()
+        return Response(content=payload, media_type=content_type)
+
     @app.get("/healthz", response_model=HealthResponse)
     def healthz() -> HealthResponse:
         sqlite_ok = True
@@ -115,13 +167,27 @@ def create_app(
         summary = pub_repo.get_status_summary()
         ev_count, ses_count = sched_repo.count_published_schedules()
         qd = _get_qdrant()
-        _, qd_count = qd.health_check()
+        qd_ok, qd_count = qd.health_check()
+        policy = _load_policy()
+        alert_report = evaluate_alerts(
+            engine=engine,
+            policy=policy,
+            scope_path=cfg.scope_file,
+            qdrant_ok=qd_ok,
+            qdrant_published_points=qd_count,
+        )
         return StatusResponse(
             **summary,
+            retrieval_mode=policy.indexing.retrieval_mode,
             published_donation_events=ev_count,
             published_donation_sessions=ses_count,
             qdrant_mode=qd.mode,
             qdrant_published_points=qd_count,
+            dlq_count=alert_report.dlq_count,
+            outbox_pending_count=alert_report.outbox_pending_count,
+            fts5_mismatches=alert_report.fts5_mismatches,
+            oldest_pending_gate_b_age_hours=alert_report.oldest_pending_gate_b_age_hours,
+            alerts=alert_report.alerts,
         )
 
     @app.get("/v1/knowledge/search", response_model=KnowledgeSearchResponse)
@@ -133,30 +199,64 @@ def create_app(
     ) -> KnowledgeSearchResponse:
         emb = _get_embedder()
         qd = _get_qdrant()
+        policy = _load_policy()
         q_vec = emb.embed_query(q)
-        raw_hits = qd.search(q_vec, limit=limit, lang=lang, category=category)
 
         results: list[KnowledgeChunkHit] = []
-        for hit in raw_hits:
-            p = hit.payload
-            results.append(
-                KnowledgeChunkHit(
-                    chunk_id=str(p.get("chunk_id") or hit.point_id),
-                    text=str(p.get("text") or ""),
-                    score=round(float(hit.score), 6),
-                    title=p.get("title"),
-                    section=p.get("section"),
-                    category=str(p.get("category") or "uncategorized"),
-                    language=str(p.get("language") or "ms"),
-                    source_url=str(p.get("source_url") or ""),
-                    asset_url=p.get("asset_url"),
-                    content_type=p.get("content_type"),
-                    last_verified_at=str(p.get("last_verified_at") or ""),
-                    source_effective_date=p.get("source_effective_date"),
-                    valid_until=p.get("valid_until"),
-                    pending_change=bool(p.get("pending_change", False)),
-                )
+        if policy.indexing.retrieval_mode == "hybrid":
+            cand_limit = max(limit, limit * policy.indexing.hybrid_candidate_multiplier)
+            dense_hits = qd.search(q_vec, limit=cand_limit, lang=lang, category=category)
+            bm25_hits = bm25_search.search_chunks(
+                q=q, lang=lang, category=category, limit=cand_limit
             )
+            fused = fuse_rrf(
+                dense_hits=dense_hits,
+                bm25_hits=bm25_hits,
+                k=policy.indexing.hybrid_rrf_k,
+                limit=limit,
+            )
+            for item in fused:
+                p = item.payload
+                results.append(
+                    KnowledgeChunkHit(
+                        chunk_id=item.chunk_id,
+                        text=str(p.get("text") or ""),
+                        score=round(float(item.score), 6),
+                        title=p.get("title"),
+                        section=p.get("section"),
+                        category=str(p.get("category") or "uncategorized"),
+                        language=str(p.get("language") or "ms"),
+                        source_url=str(p.get("source_url") or ""),
+                        asset_url=p.get("asset_url"),
+                        content_type=p.get("content_type"),
+                        last_verified_at=str(p.get("last_verified_at") or ""),
+                        source_effective_date=p.get("source_effective_date"),
+                        valid_until=p.get("valid_until"),
+                        pending_change=bool(p.get("pending_change", False)),
+                    )
+                )
+        else:
+            raw_hits = qd.search(q_vec, limit=limit, lang=lang, category=category)
+            for hit in raw_hits:
+                p = hit.payload
+                results.append(
+                    KnowledgeChunkHit(
+                        chunk_id=str(p.get("chunk_id") or hit.point_id),
+                        text=str(p.get("text") or ""),
+                        score=round(float(hit.score), 6),
+                        title=p.get("title"),
+                        section=p.get("section"),
+                        category=str(p.get("category") or "uncategorized"),
+                        language=str(p.get("language") or "ms"),
+                        source_url=str(p.get("source_url") or ""),
+                        asset_url=p.get("asset_url"),
+                        content_type=p.get("content_type"),
+                        last_verified_at=str(p.get("last_verified_at") or ""),
+                        source_effective_date=p.get("source_effective_date"),
+                        valid_until=p.get("valid_until"),
+                        pending_change=bool(p.get("pending_change", False)),
+                    )
+                )
         return KnowledgeSearchResponse(
             query=q,
             lang=lang,

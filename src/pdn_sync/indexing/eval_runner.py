@@ -19,6 +19,7 @@ from pdn_sync.indexing.embedder import EmbeddingBackend, create_embedder
 from pdn_sync.indexing.publisher import PublicationService
 from pdn_sync.indexing.qdrant_store import QdrantVectorStore
 from pdn_sync.persistence.db import create_sqlite_engine
+from pdn_sync.search.hybrid import ChunkBM25SearchService, fuse_rrf
 from pdn_sync.search.tables import StructuredTableSearchService
 
 
@@ -115,10 +116,14 @@ def evaluate_retrieval(
     embedder: EmbeddingBackend,
     qdrant_store: QdrantVectorStore,
     table_search: StructuredTableSearchService | None = None,
+    bm25_search: ChunkBM25SearchService | None = None,
+    retrieval_mode: Literal["dense", "hybrid"] = "dense",
+    rrf_k: int = 60,
+    hybrid_candidate_multiplier: int = 4,
     top_k: int = 5,
     index_seconds: float | None = None,
 ) -> EvalReport:
-    """Run all EvalQuestions against Qdrant + SQLite FTS5 and compute retrieval metrics."""
+    """Run all EvalQuestions against Qdrant (+ optional SQLite FTS5 BM25 RRF) and tables."""
     results: list[QuestionEvalResult] = []
     latencies: list[float] = []
 
@@ -130,14 +135,32 @@ def evaluate_retrieval(
 
         if q.search_target in {"knowledge", "both"}:
             q_vec = embedder.embed_query(q.query)
-            hits = qdrant_store.search(q_vec, limit=top_k, lang="any")
-            for h in hits:
-                url = str(h.payload.get("source_url") or "")
-                lv = str(h.payload.get("last_verified_at") or "")
-                if not url or not lv:
-                    citations_ok = False
-                retrieved_urls.append(url)
-                retrieved_texts.append(str(h.payload.get("text") or ""))
+            if retrieval_mode == "hybrid" and bm25_search is not None:
+                cand_k = max(top_k, top_k * hybrid_candidate_multiplier)
+                dense_hits = qdrant_store.search(q_vec, limit=cand_k, lang="any")
+                bm25_hits = bm25_search.search_chunks(q=q.query, lang="any", limit=cand_k)
+                fused = fuse_rrf(
+                    dense_hits=dense_hits,
+                    bm25_hits=bm25_hits,
+                    k=rrf_k,
+                    limit=top_k,
+                )
+                for fh in fused:
+                    url = str(fh.payload.get("source_url") or "")
+                    lv = str(fh.payload.get("last_verified_at") or "")
+                    if not url or not lv:
+                        citations_ok = False
+                    retrieved_urls.append(url)
+                    retrieved_texts.append(str(fh.payload.get("text") or ""))
+            else:
+                hits = qdrant_store.search(q_vec, limit=top_k, lang="any")
+                for h in hits:
+                    url = str(h.payload.get("source_url") or "")
+                    lv = str(h.payload.get("last_verified_at") or "")
+                    if not url or not lv:
+                        citations_ok = False
+                    retrieved_urls.append(url)
+                    retrieved_texts.append(str(h.payload.get("text") or ""))
 
         if q.search_target in {"tables", "both"} and table_search is not None:
             thits = table_search.search_tables(q=q.query, limit=top_k)
