@@ -10,6 +10,8 @@ from fastapi import FastAPI, Query
 from sqlalchemy import text
 
 from pdn_sync.api.schemas import (
+    DonationEventsResponse,
+    DonationSessionHit,
     HealthResponse,
     KnowledgeChunkHit,
     KnowledgeSearchResponse,
@@ -22,6 +24,8 @@ from pdn_sync.indexing.embedder import EmbeddingBackend, create_embedder
 from pdn_sync.indexing.qdrant_store import QdrantVectorStore
 from pdn_sync.persistence.db import create_sqlite_engine, upgrade_database
 from pdn_sync.persistence.publication_repo import PublicationRepository
+from pdn_sync.persistence.schedule_repo import ScheduleRepository
+from pdn_sync.search.events import DonationEventSearchService
 from pdn_sync.search.tables import StructuredTableSearchService
 
 
@@ -36,7 +40,9 @@ def create_app(
     upgrade_database(cfg.sqlite_path)
     engine = create_sqlite_engine(cfg.sqlite_path)
     pub_repo = PublicationRepository(engine)
+    sched_repo = ScheduleRepository(engine)
     table_search = StructuredTableSearchService(engine)
+    event_search = DonationEventSearchService(engine)
 
     owns_qdrant = qdrant_store is None
     active_qdrant: QdrantVectorStore | None = qdrant_store
@@ -107,10 +113,13 @@ def create_app(
     @app.get("/v1/status", response_model=StatusResponse)
     def v1_status() -> StatusResponse:
         summary = pub_repo.get_status_summary()
+        ev_count, ses_count = sched_repo.count_published_schedules()
         qd = _get_qdrant()
         _, qd_count = qd.health_check()
         return StatusResponse(
             **summary,
+            published_donation_events=ev_count,
+            published_donation_sessions=ses_count,
             qdrant_mode=qd.mode,
             qdrant_published_points=qd_count,
         )
@@ -182,6 +191,64 @@ def create_app(
         return TableSearchResponse(
             query=q,
             source_url=source_url,
+            total=len(items),
+            results=items,
+        )
+
+    @app.get("/v1/events", response_model=DonationEventsResponse)
+    def search_events(
+        date: Annotated[
+            str | None,
+            Query(pattern=r"^\d{4}-\d{2}-\d{2}$", description="Exact date YYYY-MM-DD"),
+        ] = None,
+        date_from: Annotated[
+            str | None,
+            Query(pattern=r"^\d{4}-\d{2}-\d{2}$", description="Start date YYYY-MM-DD"),
+        ] = None,
+        date_to: Annotated[
+            str | None,
+            Query(pattern=r"^\d{4}-\d{2}-\d{2}$", description="End date YYYY-MM-DD"),
+        ] = None,
+        state: Annotated[str | None, Query(max_length=64)] = None,
+        q: Annotated[str | None, Query(max_length=500)] = None,
+        limit: Annotated[int, Query(ge=1, le=50)] = 20,
+    ) -> DonationEventsResponse:
+        hits = event_search.search_events(
+            date=date,
+            date_from=date_from,
+            date_to=date_to,
+            state=state,
+            q=q,
+            limit=limit,
+        )
+        items = [
+            DonationSessionHit(
+                event_id=h.event_id,
+                session_id=h.session_id,
+                organizer=h.organizer,
+                location_name=h.location_name,
+                address=h.address,
+                city=h.city,
+                state=h.state,
+                event_date=h.event_date,
+                time_start=h.time_start,
+                time_end=h.time_end,
+                session_label=h.session_label,
+                target_donors=h.target_donors,
+                raw_cells=h.raw_cells,
+                status=h.status,
+                source_url=h.source_url,
+                last_verified_at=h.last_verified_at,
+                pending_change=h.pending_change,
+            )
+            for h in hits
+        ]
+        return DonationEventsResponse(
+            date=date,
+            date_from=date_from,
+            date_to=date_to,
+            state=state,
+            query=q,
             total=len(items),
             results=items,
         )

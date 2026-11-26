@@ -56,3 +56,10 @@ indexing:
   chunk_target_chars: 1000
   chunk_overlap_chars: 150
   embedding_model: BAAI/bge-m3
+
+# Phase 4 bounded JEvents structured schedule policy (Track 2 — SQLite + FTS5 only)
+calendar:
+  months_ahead: 3
+  max_eventdetail_pages_per_run: 200
+  calendar_interval_hours: 6
+  allow_past_days_grace: 1

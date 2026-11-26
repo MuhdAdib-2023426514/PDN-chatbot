@@ -423,3 +423,81 @@ class StructuredTableRowItem(Base):
     cells_json: Mapped[str] = mapped_column(Text, nullable=False)
     row_text: Mapped[str] = mapped_column(Text, nullable=False)
     source_selector: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+
+class DonationEventRow(Base):
+    __tablename__ = "donation_events"
+    __table_args__ = (
+        Index("ix_donation_events_date", "event_date"),
+        Index("ix_donation_events_status_date", "status", "event_date"),
+        Index("ix_donation_events_resource", "resource_id"),
+    )
+
+    event_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    upstream_event_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    publication_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("publication_versions.publication_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    artifact_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("staged_artifacts.artifact_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    title: Mapped[str | None] = mapped_column(Text, nullable=True)
+    event_date: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="listed")
+    last_verified_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    published_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    pending_change: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    version_seq: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+
+
+class DonationSessionRow(Base):
+    __tablename__ = "donation_sessions"
+    __table_args__ = (
+        Index("ix_donation_sessions_event_date", "event_date", "is_current"),
+        Index("ix_donation_sessions_state_date", "state", "event_date", "is_current"),
+        Index("ix_donation_sessions_identity", "session_identity", "is_current"),
+        Index("ix_donation_sessions_norm_loc", "normalized_location"),
+        Index("ix_donation_sessions_norm_org", "normalized_organizer"),
+    )
+
+    session_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    event_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("donation_events.event_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    publication_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("publication_versions.publication_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    session_identity: Mapped[str] = mapped_column(String(64), nullable=False)
+    organizer: Mapped[str | None] = mapped_column(Text, nullable=True)
+    normalized_organizer: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    location_name: Mapped[str | None] = mapped_column(Text, nullable=True)
+    normalized_location: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    address: Mapped[str | None] = mapped_column(Text, nullable=True)
+    city: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    state: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    event_date: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    time_start: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    time_end: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    session_label: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    target_donors: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    raw_cells_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="listed")
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    last_verified_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    pending_change: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    superseded_by_session_id: Mapped[str | None] = mapped_column(String(64), nullable=True)

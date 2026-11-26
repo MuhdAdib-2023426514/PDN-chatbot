@@ -7,16 +7,19 @@ from pathlib import Path
 from typing import Any
 
 from pdn_sync.discovery.exporter import atomic_write_text
+from pdn_sync.discovery.models import DiscoveryCategory
 from pdn_sync.domain.policy import ResourceType
 from pdn_sync.extractors.contracts import ExtractedTable, ExtractionResult
 
 
-def _folder_for_resource_type(resource_type: ResourceType) -> str:
-    if resource_type == ResourceType.PAGE:
+def _folder_for_artifact(result: ExtractionResult) -> str:
+    if result.category == DiscoveryCategory.DONATION_SCHEDULE or result.structured_events:
+        return "donation_schedules"
+    if result.resource_type == ResourceType.PAGE:
         return "articles"
-    if resource_type == ResourceType.IMAGE_POSTER:
+    if result.resource_type == ResourceType.IMAGE_POSTER:
         return "posters"
-    if resource_type == ResourceType.DOCUMENT:
+    if result.resource_type == ResourceType.DOCUMENT:
         return "documents"
     return "articles"
 
@@ -89,6 +92,34 @@ def render_extraction_markdown(result: ExtractionResult) -> str:
                 lines.append(blk.text)
                 lines.append("")
 
+    if result.structured_events:
+        lines.extend(["## Structured Donation Sessions (JSON Authoritative)", ""])
+        header_row = (
+            "| Date | Session | Start | End | Organizer | Location | State | Target | Raw Cells |"
+        )
+        lines.extend(
+            [
+                header_row,
+                "|---|---|---|---|---|---|---|---:|---|",
+            ]
+        )
+        for ev in result.structured_events:
+            raw_summary = "; ".join(f"{k}={v}" for k, v in sorted(ev.raw_cells.items()))
+            cells = [
+                ev.event_date or "-",
+                ev.session_label or "-",
+                ev.time_start or "-",
+                ev.time_end or "-",
+                ev.organizer or "-",
+                ev.location_name or "-",
+                ev.state or "-",
+                str(ev.target_donors) if ev.target_donors is not None else "-",
+                raw_summary or "-",
+            ]
+            escaped_cells = [c.replace("|", "\\|").replace("\n", " ") for c in cells]
+            lines.append("| " + " | ".join(escaped_cells) + " |")
+        lines.append("")
+
     if result.tables:
         lines.extend(["## Extracted Tables", ""])
         for tbl in result.tables:
@@ -155,7 +186,7 @@ def export_staged_artifact(
 ) -> tuple[Path, Path]:
     """Atomically write immutable JSON + Markdown staging artifacts and update manifest."""
     extracted_root = data_dir / "extracted"
-    sub_dir = extracted_root / _folder_for_resource_type(result.resource_type)
+    sub_dir = extracted_root / _folder_for_artifact(result)
     stem = f"{result.resource_id}_v{version_seq:03d}_{result.semantic_hash[:12]}"
 
     json_path = sub_dir / f"{stem}.json"

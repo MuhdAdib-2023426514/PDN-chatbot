@@ -107,7 +107,7 @@ def build_chunks_for_artifact(
     """Build deterministic Qdrant-ready chunks from an approved ExtractionResult."""
     # Exclude JEvents donation schedules from Qdrant by default (AGENTS.md Section 9)
     if (
-        result.category == DiscoveryCategory.JEVENTS_DEFERRED
+        result.category in {DiscoveryCategory.JEVENTS_DEFERRED, DiscoveryCategory.DONATION_SCHEDULE}
         and not policy.embed_donation_schedule_rows
     ):
         return ChunkingResult(document_language=result.language or "ms", chunks=[])

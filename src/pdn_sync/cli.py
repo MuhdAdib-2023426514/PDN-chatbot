@@ -43,6 +43,7 @@ from pdn_sync.persistence.repository import ControlPlaneRepository, InventoryFil
 from pdn_sync.persistence.staging_repo import GateBPublishBlockedError, StageQueueFilter
 from pdn_sync.scheduler.worker import WorkerProfile, run_profile_once, start_worker
 from pdn_sync.search.tables import StructuredTableSearchService
+from pdn_sync.staging.calendar_sync import CalendarSyncOptions, run_calendar_sync_pipeline
 from pdn_sync.staging.fixtures import FixtureCaptureBlockedError, capture_safe_fixture
 from pdn_sync.staging.gate_b import (
     ExtractionOptions,
@@ -63,6 +64,7 @@ fixtures_app = typer.Typer(help="Safe fixture capture commands (Gate-A & PDPA en
 api_app = typer.Typer(help="Read-only chatbot HTTP API commands (Phase 3+).")
 worker_app = typer.Typer(help="Single-process scheduled worker commands (ADR-orchestration.md).")
 eval_app = typer.Typer(help="Retrieval evaluation and multilingual embedding benchmarks.")
+calendar_app = typer.Typer(help="Phase 4 bounded JEvents blood donation schedule commands.")
 
 app.add_typer(db_app, name="db")
 app.add_typer(inventory_app, name="inventory")
@@ -72,6 +74,7 @@ app.add_typer(fixtures_app, name="fixtures")
 app.add_typer(api_app, name="api")
 app.add_typer(worker_app, name="worker")
 app.add_typer(eval_app, name="eval")
+app.add_typer(calendar_app, name="calendar")
 
 
 @db_app.command("upgrade")
@@ -746,6 +749,7 @@ def publish(
         f"[PUBLISHED] model={summary.embedding_model} collection={summary.qdrant_collection} "
         f"published={summary.published} skipped_idempotent={summary.skipped_idempotent} "
         f"chunks={summary.chunks_upserted} tables={summary.tables_published} "
+        f"schedule_sessions={summary.schedule_sessions_published} "
         f"superseded={summary.superseded_publications} blocked={summary.blocked}",
         fg=typer.colors.GREEN,
     )
@@ -807,7 +811,7 @@ def worker_run_once(
         str,
         typer.Option(
             "--profile",
-            help="Profile to run: homepage, site, discovery_audit, or publish_sync",
+            help="Profile to run: homepage, calendar, site, discovery_audit, or publish_sync",
         ),
     ],
     live: Annotated[bool, typer.Option("--live", help="Enable live network fetching")] = False,
@@ -815,6 +819,7 @@ def worker_run_once(
     """Run one sync profile once in the foreground (framework-agnostic)."""
     valid_profiles: tuple[WorkerProfile, ...] = (
         "homepage",
+        "calendar",
         "site",
         "discovery_audit",
         "publish_sync",
@@ -830,6 +835,7 @@ def worker_run_once(
     settings = AppSettings()
     profile_map: dict[str, WorkerProfile] = {
         "homepage": "homepage",
+        "calendar": "calendar",
         "site": "site",
         "discovery_audit": "discovery_audit",
         "publish_sync": "publish_sync",
@@ -1134,6 +1140,69 @@ def scope_export(
     typer.secho("Exported joined inventory views:", fg=typer.colors.GREEN)
     for label, path in written.items():
         typer.echo(f"  {label}: {path}")
+
+
+@calendar_app.command("sync")
+def calendar_sync(
+    live: Annotated[
+        bool,
+        typer.Option("--live", help="Fetch bounded JEvents monthcalendar + eventdetail live"),
+    ] = False,
+    months_ahead: Annotated[
+        int | None,
+        typer.Option("--months-ahead", help="Months ahead of current month (default 3)"),
+    ] = None,
+    limit: Annotated[
+        int | None,
+        typer.Option("--limit", help="Maximum eventdetail pages to process"),
+    ] = None,
+    scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
+    policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Discover and stage bounded JEvents blood donation schedules for Gate B review."""
+    if not live:
+        typer.secho(
+            "Refusing live calendar sync without --live flag (safe default). "
+            "Pass --live with PDN_LIVE_CRAWL_ENABLED=true when ready.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    settings = AppSettings()
+    try:
+        summary = run_calendar_sync_pipeline(
+            options=CalendarSyncOptions(
+                live=True,
+                months_ahead=months_ahead,
+                limit=limit,
+                scope_file=scope_file,
+                policy_file=policy_file,
+                sqlite_path=sqlite_path,
+            ),
+            settings=settings,
+            progress_cb=lambda msg: typer.echo(f"[calendar] {msg}"),
+        )
+    except (
+        ConfigurationError,
+        LiveCrawlBlockedError,
+        RobotsUnavailableError,
+        GateABlockedError,
+    ) as exc:
+        typer.secho(f"CALENDAR SYNC BLOCKED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.secho(
+        f"Calendar sync complete: run_id={summary.run_id} "
+        f"months={summary.months_succeeded}/{summary.months_attempted} "
+        f"discovered={summary.eventdetail_discovered} fetched={summary.fetched} "
+        f"unchanged={summary.unchanged_blob} pending={summary.staged_pending} "
+        f"quarantined={summary.staged_quarantined} carried_forward={summary.carried_forward} "
+        f"sessions={summary.sessions_extracted_total} removed={summary.marked_removed_events} "
+        f"failed={summary.failed}",
+        fg=typer.colors.GREEN,
+    )
 
 
 @app.command("check-policy")

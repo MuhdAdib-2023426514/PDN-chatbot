@@ -8,7 +8,7 @@
 - [x] **Phase 1 — Discovery-only URL & asset inventory + Gate A approval (JEvents excluded)** *(live discovery `disc_20261124T055806Z_da8f19c7` and Gate A completed 2026-11-24)*
 - [x] **Phase 2 — Approved multimodal extraction & Gate B staging (2a HTML, 2b PDFs/docs, 2c Posters/OCR)** *(code, 102/102 tests, pilot `ext_20261125T031828Z_7fc76696`, full 736-item resumable run `ext_20261126T001234Z_f1afbfcd` [721 staged, 14 HTTP 404s, 1 PNG transcribed], and Gate B human triage [531 approved, 214 rejected, 0 unresolved] completed 2026-11-26)*
 - [x] **Phase 3 — Orchestration ADR, approved publication & chatbot read API** *(completed 2026-11-26: `docs/decisions/ADR-orchestration.md` approved; Alembic `0003_phase3_publication_and_fts5`; 40-question Malay/English `tests/eval/questions.yaml` approved; `BAAI/bge-m3` won benchmark [Hit@1 72.5%, Hit@5 85.0%, MRR@5 0.7875, Fact Recall@5 92.5%, Citation 100%] over `multilingual-e5-small`; all 531 approved artifacts published [4,730 Qdrant points, 1,021 SQLite+FTS5 tables]; live read-only FastAPI API & 112/112 tests passing)*
-- [ ] **Phase 4 — Structured blood donation schedules (JEvents → SQLite + FTS5)**
+- [x] **Phase 4 — Structured blood donation schedules (JEvents → SQLite + FTS5)** *(implemented & offline-verified 2026-11-26: Gate A bounded JEvents rules in `config/crawl_scope.yaml`; Alembic `0004_phase4_donation_schedules`; `jevents_html_bs4 v1.1.0` multi-session parser + `ScheduleRepository` + `GET /v1/events` + 6h `calendar` worker; `120/120` tests passing; live bounded sync `cal_20261126T081755Z_e74139f6` + offline v1.1.0 reextract staged `47` `eventdetail` pages / `376` sessions [`2026-10-31`..`2026-12-06`] with `0` time anomalies — awaiting Gate B human approval before live `/v1/events` publish)*
 - [ ] **Phase 5 — Reliability, observability, and operations**
 
 ---
@@ -82,11 +82,16 @@ Captured from real live full-corpus extraction (`ext_20261126T001234Z_f1afbfcd` 
   - Production publication verified idempotent (`published=531`, `chunks=4730`, `tables=1021`, re-run `skipped_idempotent=531`, `blocked=0`).
   - Live FastAPI smoke tests passed across `/healthz`, `/v1/status`, `/v1/knowledge/search`, and `/v1/tables`.
   - Static checks & tests: `ruff format --check`, `ruff check`, `mypy --strict src tests` (`74` files, `0` issues), `pytest` (`112/112` passed).
+- **Phase 4 (2026-11-26):**
+  - Dedicated Gate A JEvents boundary applied to `config/crawl_scope.yaml` (bounded `monthcalendar` current + 3 months & `eventdetail` patterns; runaway views `eventsbyweek/day/year/month`, `icalrepeat`, `search`, `?option=com_jevents*` remain hard-excluded).
+  - Alembic `0004_phase4_donation_schedules` (`donation_events`, `donation_sessions`, B-tree indexes verified via `EXPLAIN QUERY PLAN`, `donation_sessions_fts_u61`, `donation_sessions_fts_tri`).
+  - Live bounded sync (`cal_20261126T081755Z_e74139f6`) across `2026/11`–`2027/02`: `4/4` months fetched cleanly, `47/47` `eventdetail` pages captured into `LocalBlobStore`. Live audit caught & fixed 3 real PDN calendar quirks in `jevents_html_bs4 v1.1.0` (spaced two-digit hours `1 1 .00 PAGI` / `1 0 .00 PAGI`, authoritative `.jev_evdt_summary` date overriding body typo on `/2840/`, and multi-day `From..To` range expansion on `/2780/`). Offline re-extract produced **`47` pending artifacts / `376` sessions (`2026-10-31`..`2026-12-06`) with `0` time anomalies**, paused at Gate B for owner review.
+  - Static checks & tests: `ruff format --check`, `ruff check`, `mypy --strict src tests` (`80` files, `0` issues), `pytest` (`120/120` passed).
 
 ---
 
-## Open Blockers & Risks Before Phase 4
+## Open Blockers & Risks Before Phase 5
 
-- **14 previously-approved URLs returned HTTP `404` during Phase 2 live extraction** (`5` staff-directory leaf URLs + `9` images); can optionally be excluded in `config/crawl_scope.yaml`.
-- **Embedded Qdrant file-lock boundary:** `QdrantClient(path="data/qdrant")` allows one process at a time; run `compose.yaml --profile qdrant` with `PDN_QDRANT_URL=http://127.0.0.1:6333` when running `pdn-sync worker start` concurrently with `pdn-sync api serve`.
-- **Phase 4 prerequisite:** Lift the Phase-1 JEvents exclusion via a dedicated Gate A review for bounded `monthcalendar` (current + next 3 months) and `eventdetail` pattern rules before scraping blood donation schedules into SQLite + FTS5.
+- **Gate B human review ready for Phase 4 schedules:** `47` validated `donation_schedule` artifacts (`376` sessions across `2026-10-31`..`2026-12-06`, `0` quarantined, `0` time anomalies) are staged under `data/extracted/donation_schedules/` awaiting owner approval before publishing live to `GET /v1/events`.
+- **14 previously-approved Track 1 URLs returned HTTP `404` during Phase 2 live extraction** (`5` staff-directory leaf URLs + `9` images); can optionally be excluded in `config/crawl_scope.yaml`.
+- **Embedded Qdrant file-lock boundary:** use `compose.yaml --profile qdrant` with `PDN_QDRANT_URL=http://127.0.0.1:6333` when running `pdn-sync worker start` concurrently with `pdn-sync api serve`.

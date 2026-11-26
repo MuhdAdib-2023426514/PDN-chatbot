@@ -25,6 +25,7 @@ class DiscoveryCategory(StrEnum):
     """Exact 18-category fixed classification taxonomy from AGENTS.md Section 6."""
 
     JEVENTS_DEFERRED = "jevents_deferred"
+    DONATION_SCHEDULE = "donation_schedule"
     SYSTEM = "system"
     EXTERNAL = "external"
     HOMEPAGE = "homepage"

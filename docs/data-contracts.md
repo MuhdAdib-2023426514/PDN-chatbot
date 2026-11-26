@@ -91,8 +91,11 @@ Authoritative SQLite + FTS5 (`unicode61 remove_diacritics 2` + `trigram` + bound
 - Each item in `results[]`:
   - `table_id`, `caption`, `headers[]`, `rows[][]`, `units[]`, `source_url`, `category`, `last_verified_at`, `source_effective_date`, `valid_until`, `pending_change`.
 
-### `GET /v1/events?date=<YYYY-MM-DD>&date_from=&date_to=&state=&q=&limit=<1..50>` *(Phase 4)*
-Deferred until Phase 4 bounded JEvents structured schedule ingestion.
+### `GET /v1/events?date=<YYYY-MM-DD>&date_from=&date_to=&state=&q=&limit=<1..50>`
+Authoritative SQLite + FTS5 (`unicode61 remove_diacritics 2` + `trigram` + bounded `RapidFuzz` candidate discovery, never overriding authoritative date/state SQL filters) blood donation schedule retrieval (zero Qdrant schedule vectors by default):
+- Response envelope: `{date, date_from, date_to, state, query, total, results[]}`
+- Each item in `results[]`:
+  - `event_id`, `session_id`, `organizer`, `location_name`, `address`, `city`, `state`, `event_date`, `time_start`, `time_end`, `session_label`, `target_donors`, `raw_cells`, `status` (`listed` | `amended` | `not_confirmed` | `removed_from_source` | `canceled_if_explicit`), `source_url`, `last_verified_at`, `pending_change`.
 
 ### `GET /healthz` and `GET /v1/status`
 - `/healthz`: `{status, sqlite, qdrant, qdrant_mode, qdrant_published_points}`

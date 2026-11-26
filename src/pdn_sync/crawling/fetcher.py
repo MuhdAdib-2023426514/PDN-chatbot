@@ -70,6 +70,7 @@ class ApprovedContentFetcher:
         transport: httpx.BaseTransport | None = None,
         sleep_fn: Callable[[float], None] | None = None,
         resolve_dns: bool = True,
+        allow_jevents: bool = False,
     ) -> None:
         self.settings = settings
         self.scope = scope
@@ -80,6 +81,7 @@ class ApprovedContentFetcher:
         self.transport = transport
         self.sleep_fn = sleep_fn if sleep_fn is not None else time.sleep
         self.resolve_dns = resolve_dns
+        self.allow_jevents = allow_jevents
         self._user_agent = settings.user_agent()
         self._has_requested = False
 
@@ -107,8 +109,10 @@ class ApprovedContentFetcher:
             allowed_path_prefix=self.scope.allowed_path_prefix,
         ):
             raise FetchBlockedError(f"Redirect/target escaped allowed scope: {normalized}")
-        if is_jevents_url(normalized):
-            raise FetchBlockedError(f"JEvents URL blocked in Phases 0-3: {normalized}")
+        if is_jevents_url(normalized) and not self.allow_jevents:
+            raise FetchBlockedError(
+                f"JEvents URL blocked in Track 1 non-calendar mode: {normalized}"
+            )
         if not self.robots.is_allowed(normalized):
             raise FetchBlockedError(f"Disallowed by /v2/robots.txt: {normalized}")
         assert_url_approved_for_content_crawl(

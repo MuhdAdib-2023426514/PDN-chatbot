@@ -27,19 +27,35 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 def test_default_repo_scope_excludes_jevents_and_system_and_defaults_others_pending() -> None:
     scope, _ = load_crawl_scope(REPO_ROOT / "config/crawl_scope.yaml")
 
-    jevents_path = evaluate_scope(
+    # Phase 4 bounded monthcalendar and eventdetail are approved under bounded patterns
+    jevents_month = evaluate_scope(
         "https://pdn.gov.my/v2/index.php/component/jevents/monthcalendar/2026/11/-?Itemid=0",
         scope,
+        resource_type=ResourceType.PAGE,
     )
-    assert jevents_path.disposition == Disposition.EXCLUDED
-    assert jevents_path.reason == "deferred_to_structured_schedule_phase"
+    assert jevents_month.disposition == Disposition.APPROVED
+
+    jevents_detail = evaluate_scope(
+        "https://pdn.gov.my/v2/index.php/component/jevents/eventdetail/123/-/kempen",
+        scope,
+        resource_type=ResourceType.PAGE,
+    )
+    assert jevents_detail.disposition == Disposition.APPROVED
+
+    # Runaway / non-target JEvents views remain strictly excluded
+    jevents_week = evaluate_scope(
+        "https://pdn.gov.my/v2/index.php/component/jevents/eventsbyweek/2026/11/24/-",
+        scope,
+    )
+    assert jevents_week.disposition == Disposition.EXCLUDED
+    assert jevents_week.reason == "non_target_jevents_view"
 
     jevents_query = evaluate_scope(
         "https://pdn.gov.my/v2/index.php?option=com_jevents&task=day.listevents",
         scope,
     )
     assert jevents_query.disposition == Disposition.EXCLUDED
-    assert jevents_query.reason == "deferred_to_structured_schedule_phase"
+    assert jevents_query.reason == "non_target_jevents_view"
 
     admin = evaluate_scope("https://pdn.gov.my/v2/administrator/index.php", scope)
     assert admin.disposition == Disposition.EXCLUDED

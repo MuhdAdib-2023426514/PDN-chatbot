@@ -33,6 +33,10 @@ _QUARANTINE_WARNINGS: frozenset[str] = frozenset(
         "no_text_detected",
         "unreadable_or_corrupt_image_bytes",
         "legacy_binary_doc_requires_libreoffice_conversion_or_exclusion",
+        "unparseable_event_date",
+        "unparseable_time_range",
+        "empty_schedule_events",
+        "missing_location_name",
     }
 )
 
@@ -121,7 +125,12 @@ def validate_and_tag(
     elif any(w in _QUARANTINE_WARNINGS for w in warnings):
         validation_status = ValidationStatus.NEEDS_REVIEW
         must_quarantine = True
-    elif not result.text_blocks and not result.tables and not result.ocr_lines:
+    elif (
+        not result.text_blocks
+        and not result.tables
+        and not result.ocr_lines
+        and not result.structured_events
+    ):
         if "empty_extraction" not in warnings:
             warnings.append("empty_extraction")
         validation_status = ValidationStatus.NEEDS_REVIEW

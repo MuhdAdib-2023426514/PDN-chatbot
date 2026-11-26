@@ -35,6 +35,7 @@ from pdn_sync.extractors.contracts import (
     ValidationStatus,
 )
 from pdn_sync.extractors.html_extractor import HTML_EXTRACTOR_NAME, extract_html
+from pdn_sync.extractors.jevents import JEVENTS_EXTRACTOR_NAME, extract_jevents_eventdetail
 from pdn_sync.extractors.pdf_docling import PDF_EXTRACTOR_NAME, PdfBackend, extract_pdf
 from pdn_sync.extractors.poster_ocr import OCR_EXTRACTOR_NAME, OcrBackend, extract_poster_ocr
 from pdn_sync.persistence.blob_store import LocalBlobStore
@@ -906,9 +907,12 @@ class GateBService:
             "html": HTML_EXTRACTOR_NAME,
             "pdf": PDF_EXTRACTOR_NAME,
             "ocr": OCR_EXTRACTOR_NAME,
+            "jevents": JEVENTS_EXTRACTOR_NAME,
         }
         if extractor not in prefix_map:
-            raise ValueError(f"Unsupported extractor {extractor!r}; choose from html, pdf, ocr")
+            raise ValueError(
+                f"Unsupported extractor {extractor!r}; choose from html, pdf, ocr, jevents"
+            )
 
         scope, _ = load_crawl_scope(self.scope_path)
         policy = load_ingestion_policy(self.policy_path)
@@ -953,6 +957,17 @@ class GateBService:
                         policy_rule_id=orig.policy_rule_id,
                         content_type=orig.content_type,
                         backend=pdf_backend,
+                    )
+                elif extractor == "jevents":
+                    re_res = extract_jevents_eventdetail(
+                        raw_html=raw_bytes,
+                        source_url=orig.source_url,
+                        resource_id=orig.resource_id,
+                        resource_version_id=ver_id,
+                        content_hash=orig.content_hash,
+                        captured_at_utc=orig.captured_at_utc,
+                        policy_rule_id=orig.policy_rule_id,
+                        content_type=orig.content_type,
                     )
                 else:
                     re_res, _ = extract_poster_ocr(

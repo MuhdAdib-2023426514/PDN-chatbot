@@ -53,7 +53,14 @@ uv run pdn-sync api serve --host 127.0.0.1 --port 8000
 uv run pdn-sync worker run-once --profile publish_sync
 # Optional: docker compose --profile qdrant up -d  (set PDN_QDRANT_URL=http://127.0.0.1:6333)
 
-# 7. Run quality checks & test suite
+# 7. Phase 4: Bounded JEvents blood donation schedules (SQLite + FTS5 + /v1/events)
+PDN_LIVE_CRAWL_ENABLED=true uv run pdn-sync calendar sync --live --months-ahead 3
+uv run pdn-sync stage list --category donation_schedule
+uv run pdn-sync stage approve --category donation_schedule --dry-run
+uv run pdn-sync publish --approved-only --execute
+uv run pdn-sync worker run-once --profile calendar --live
+
+# 8. Run quality checks & test suite
 uv run ruff format --check .
 uv run ruff check .
 uv run mypy src tests

@@ -17,11 +17,12 @@ from pdn_sync.config import AppSettings, load_ingestion_policy
 from pdn_sync.discovery.crawler import DiscoveryOptions, run_discovery
 from pdn_sync.discovery.models import DiscoveryCategory
 from pdn_sync.indexing.publisher import PublicationService
+from pdn_sync.staging.calendar_sync import CalendarSyncOptions, run_calendar_sync_pipeline
 from pdn_sync.staging.gate_b import ExtractionOptions, run_extraction_pipeline
 
 logger = logging.getLogger(__name__)
 
-WorkerProfile = Literal["homepage", "site", "discovery_audit", "publish_sync"]
+WorkerProfile = Literal["homepage", "calendar", "site", "discovery_audit", "publish_sync"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +31,7 @@ class ScheduleConfig:
 
     timezone: str = "Asia/Kuala_Lumpur"
     homepage_interval_hours: int = 4
+    calendar_interval_hours: int = 6
     site_cron_hour: int = 3
     site_cron_minute: int = 0
     discovery_audit_day_of_week: str = "sun"
@@ -80,6 +82,29 @@ def run_profile_once(
         )
         pub_svc.publish_approved(dry_run=True)
         return results
+
+    if profile == "calendar":
+        cal = run_calendar_sync_pipeline(
+            options=CalendarSyncOptions(live=live),
+            settings=cfg,
+            progress_cb=progress_cb,
+        )
+        return {
+            "profile": "calendar",
+            "run_id": cal.run_id,
+            "months_succeeded": cal.months_succeeded,
+            "months_failed": cal.months_failed,
+            "eventdetail_discovered": cal.eventdetail_discovered,
+            "fetched": cal.fetched,
+            "not_modified": cal.not_modified,
+            "unchanged_blob": cal.unchanged_blob,
+            "carried_forward": cal.carried_forward,
+            "pending": cal.staged_pending,
+            "quarantined": cal.staged_quarantined,
+            "sessions_extracted_total": cal.sessions_extracted_total,
+            "marked_removed_events": cal.marked_removed_events,
+            "failed": cal.failed,
+        }
 
     if profile == "site":
         summary = run_extraction_pipeline(
@@ -173,6 +198,21 @@ def build_scheduler(
         kwargs={"settings": cfg, "live": live},
         id="pdn_homepage_check",
         name="PDN homepage & poster incremental check",
+        max_instances=1,
+        coalesce=True,
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        run_profile_once,
+        trigger=IntervalTrigger(
+            hours=sched_cfg.calendar_interval_hours,
+            timezone=tz,
+            jitter=sched_cfg.jitter_seconds,
+        ),
+        args=["calendar"],
+        kwargs={"settings": cfg, "live": live},
+        id="pdn_calendar_sync",
+        name="PDN bounded JEvents blood donation schedule sync",
         max_instances=1,
         coalesce=True,
         replace_existing=True,

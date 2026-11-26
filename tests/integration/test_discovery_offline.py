@@ -147,10 +147,36 @@ def _make_mock_site() -> tuple[httpx.MockTransport, list[tuple[str, str]]]:
     return httpx.MockTransport(handler), recorded_requests
 
 
+_PHASE1_BASELINE_SCOPE_YAML = """\
+schema_version: 1
+allowed_host: pdn.gov.my
+allowed_path_prefix: /v2
+exclusions:
+  urls: []
+  patterns:
+    - id: exclude-jevents-index-path
+      pattern: "/v2/index.php/component/jevents/**"
+      reason: deferred_to_structured_schedule_phase
+    - id: exclude-jevents-query
+      query_param: "option=com_jevents"
+      reason: deferred_to_structured_schedule_phase
+approvals:
+  pages:
+    urls: []
+    patterns: []
+  image_posters:
+    urls: []
+    patterns: []
+  documents:
+    urls: []
+    patterns: []
+"""
+
+
 def _setup_temp_env(tmp_path: Path) -> tuple[Path, Path, Path, Path, AppSettings]:
     scope_file = tmp_path / "crawl_scope.yaml"
     policy_file = tmp_path / "ingestion_policy.yaml"
-    shutil.copyfile(REPO_ROOT / "config/crawl_scope.yaml", scope_file)
+    scope_file.write_text(_PHASE1_BASELINE_SCOPE_YAML, encoding="utf-8")
     shutil.copyfile(REPO_ROOT / "config/ingestion_policy.yaml", policy_file)
     db_path = tmp_path / "pdn_sync.db"
     out_dir = tmp_path / "discovery"

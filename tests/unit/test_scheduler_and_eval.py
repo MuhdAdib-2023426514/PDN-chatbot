@@ -27,7 +27,12 @@ def test_build_scheduler_registers_all_profiles_with_safe_defaults(tmp_path: Pat
     )
     sched = build_scheduler(settings=settings, live=False)
     job_ids = {j.id for j in sched.get_jobs()}
-    assert job_ids == {"pdn_homepage_check", "pdn_site_check", "pdn_discovery_audit"}
+    assert job_ids == {
+        "pdn_homepage_check",
+        "pdn_calendar_sync",
+        "pdn_site_check",
+        "pdn_discovery_audit",
+    }
     for job in sched.get_jobs():
         assert job.max_instances == 1
         assert job.coalesce is True

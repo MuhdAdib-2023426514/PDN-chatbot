@@ -146,18 +146,46 @@ def is_staff_directory_leaf_profile(
     return len(segments) >= 2
 
 
+def is_bounded_jevents_schedule_url(
+    url: str,
+    *,
+    allowed_path_prefix: str = "/v2",
+) -> bool:
+    """Return True iff URL is a JEvents monthcalendar or eventdetail path under /v2/index.php."""
+    parts = urlsplit(url.strip())
+    rel = _strip_v2_prefix(parts.path or "/", allowed_path_prefix).lower()
+    return rel.startswith(
+        (
+            "/index.php/component/jevents/monthcalendar/",
+            "/index.php/component/jevents/eventdetail/",
+        )
+    )
+
+
 def classify_url(
     url: str,
     *,
     allowed_host: str = "pdn.gov.my",
     allowed_path_prefix: str = "/v2",
+    allow_jevents: bool = False,
 ) -> ClassificationResult:
     """Classify a URL deterministically using the fixed 18-row table (first match wins)."""
     parts = urlsplit(url)
     mime_hint = infer_mime_hint(url)
 
-    # 1. Hard Phase 1-3 JEvents exclusion
+    # 1. JEvents handling: hard-excluded in Track 1; bounded monthcalendar/eventdetail in Track 2
     if is_jevents_url(url):
+        if allow_jevents and is_bounded_jevents_schedule_url(
+            url, allowed_path_prefix=allowed_path_prefix
+        ):
+            return ClassificationResult(
+                category=DiscoveryCategory.DONATION_SCHEDULE,
+                resource_type=ResourceType.PAGE,
+                recommended_action=RecommendedAction.RECOMMENDED_APPROVE,
+                reason="phase4_bounded_jevents_schedule",
+                monitoring_interval="6h",
+                mime_hint=mime_hint or "text/html",
+            )
         return ClassificationResult(
             category=DiscoveryCategory.JEVENTS_DEFERRED,
             resource_type=ResourceType.PAGE,

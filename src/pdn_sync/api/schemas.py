@@ -61,6 +61,40 @@ class TableSearchResponse(BaseModel):
     results: list[PublishedTableHit]
 
 
+class DonationSessionHit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    event_id: str
+    session_id: str
+    organizer: str | None = None
+    location_name: str | None = None
+    address: str | None = None
+    city: str | None = None
+    state: str | None = None
+    event_date: str | None = None
+    time_start: str | None = None
+    time_end: str | None = None
+    session_label: str | None = None
+    target_donors: int | None = None
+    raw_cells: dict[str, str]
+    status: str
+    source_url: str
+    last_verified_at: str
+    pending_change: bool = False
+
+
+class DonationEventsResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    date: str | None = None
+    date_from: str | None = None
+    date_to: str | None = None
+    state: str | None = None
+    query: str | None = None
+    total: int
+    results: list[DonationSessionHit]
+
+
 class HealthResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -77,6 +111,8 @@ class StatusResponse(BaseModel):
     published_documents: int
     published_chunks: int
     published_tables: int
+    published_donation_events: int = 0
+    published_donation_sessions: int = 0
     superseded_documents: int
     retired_documents: int
     pending_change_documents: int

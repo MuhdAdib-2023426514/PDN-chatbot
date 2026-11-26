@@ -99,6 +99,17 @@ class IndexingPolicy(BaseModel):
         return self
 
 
+class CalendarPolicy(BaseModel):
+    """Phase 4 bounded JEvents structured donation schedule policy."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    months_ahead: int = Field(default=3, ge=0, le=12)
+    max_eventdetail_pages_per_run: int = Field(default=200, ge=1, le=500)
+    calendar_interval_hours: int = Field(default=6, ge=1, le=24)
+    allow_past_days_grace: int = Field(default=1, ge=0, le=31)
+
+
 class IngestionPolicyConfig(BaseModel):
     """Schema for config/ingestion_policy.yaml."""
 
@@ -113,6 +124,7 @@ class IngestionPolicyConfig(BaseModel):
     ocr: OcrPolicy = Field(default_factory=OcrPolicy)
     critical_facts: CriticalFactsPolicy = Field(default_factory=CriticalFactsPolicy)
     indexing: IndexingPolicy = Field(default_factory=IndexingPolicy)
+    calendar: CalendarPolicy = Field(default_factory=CalendarPolicy)
 
     @field_validator("domain_timezone")
     @classmethod

@@ -39,16 +39,41 @@ exclusions:
     - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-transfusi-klinikal-ctd/item/86
     - https://pdn.gov.my/v2/images/Borang2025/Blood_Donor_Registration_Form_Icon.jpg
   patterns:
-    # Hard Phase 0-3 JEvents exclusion (deferred to Phase 4 structured schedule track)
-    - id: exclude-jevents-index-path
-      pattern: "/v2/index.php/component/jevents/**"
-      reason: deferred_to_structured_schedule_phase
+    # Phase 4 JEvents boundary: exclude runaway/duplicate calendar views while allowing
+    # ONLY bounded monthcalendar (current + 3 months) and eventdetail approvals below.
+    - id: exclude-jevents-eventsbyweek
+      pattern: "/v2/index.php/component/jevents/eventsbyweek/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-eventsbyday
+      pattern: "/v2/index.php/component/jevents/eventsbyday/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-eventsbyyear
+      pattern: "/v2/index.php/component/jevents/eventsbyyear/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-eventsbymonth
+      pattern: "/v2/index.php/component/jevents/eventsbymonth/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-icalrepeat
+      pattern: "/v2/index.php/component/jevents/icalrepeat*/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-icalevent
+      pattern: "/v2/index.php/component/jevents/icalevent*/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-search
+      pattern: "/v2/index.php/component/jevents/search*/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-range
+      pattern: "/v2/index.php/component/jevents/range*/**"
+      reason: non_target_jevents_view
+    - id: exclude-jevents-crawler
+      pattern: "/v2/index.php/component/jevents/crawler*/**"
+      reason: non_target_jevents_view
     - id: exclude-jevents-short-path
       pattern: "/v2/component/jevents/**"
-      reason: deferred_to_structured_schedule_phase
+      reason: non_target_jevents_view
     - id: exclude-jevents-query
       query_param: "option=com_jevents"
-      reason: deferred_to_structured_schedule_phase
+      reason: non_target_jevents_view
 
     # System, admin, interactive/auth, and print/feed endpoints
     - id: exclude-robots-administrator
@@ -2227,6 +2252,33 @@ approvals:
         supersession: none
         approved_by: project-owner
         approved_at: '2026-11-24T07:04:32.240920+00:00'
+      - id: pattern-jevents-monthcalendar-bounded
+        pattern: /v2/index.php/component/jevents/monthcalendar/*/*/*
+        resource_type: page
+        reason: 'Phase 4 bounded JEvents monthcalendar seed (rolling current + 3 months in Asia/Kuala_Lumpur)'
+        max_matches: 12
+        check_interval: 6h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-26T08:06:00+00:00'
+      - id: pattern-jevents-eventdetail-bounded
+        pattern: /v2/index.php/component/jevents/eventdetail/*/*/*
+        resource_type: page
+        reason: 'Phase 4 bounded JEvents eventdetail structured blood donation schedule pages (SQLite + FTS5 only)'
+        max_matches: 250
+        check_interval: 6h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-26T08:06:00+00:00'
+      - id: pattern-jevents-eventdetail-short
+        pattern: /v2/index.php/component/jevents/eventdetail/*/*
+        resource_type: page
+        reason: 'Phase 4 bounded JEvents eventdetail short-path structured blood donation schedule pages (SQLite + FTS5 only)'
+        max_matches: 250
+        check_interval: 6h
+        supersession: none
+        approved_by: project-owner
+        approved_at: '2026-11-26T08:06:00+00:00'
   image_posters:
     urls:
       - url: 

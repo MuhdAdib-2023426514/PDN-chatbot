@@ -10,6 +10,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from pdn_sync.config import AppSettings, load_crawl_scope, load_ingestion_policy
+from pdn_sync.discovery.models import DiscoveryCategory
 from pdn_sync.domain.policy import ResourceType, SupersessionPolicy
 from pdn_sync.domain.scope import ApprovalPatternRule, CrawlScopeConfig
 from pdn_sync.extractors.contracts import ExtractionResult
@@ -22,6 +23,7 @@ from pdn_sync.persistence.publication_repo import (
     RetirementReconcileResult,
     StaleVersionPublishError,
 )
+from pdn_sync.persistence.schedule_repo import ScheduleRepository
 from pdn_sync.persistence.staging_repo import (
     GateBPublishBlockedError,
     StageQueueFilter,
@@ -43,6 +45,7 @@ class PublishRunSummary:
     blocked: int = 0
     chunks_upserted: int = 0
     tables_published: int = 0
+    schedule_sessions_published: int = 0
     superseded_publications: int = 0
     pending_change_updates: int = 0
     published_ids: list[str] = field(default_factory=list)
@@ -133,6 +136,7 @@ class PublicationService:
         engine = create_sqlite_engine(self.sqlite_path)
         stage_repo = StagingRepository(engine)
         pub_repo = PublicationRepository(engine)
+        sched_repo = ScheduleRepository(engine)
 
         summary = PublishRunSummary(
             dry_run=dry_run,
@@ -170,11 +174,10 @@ class PublicationService:
                             raise
                 return summary
 
-            embedder = self._external_embedder or create_embedder(model_name)
+            embedder: EmbeddingBackend | None = self._external_embedder
             qdrant, should_close_qdrant = self._open_qdrant(collection)
+            collection_ready = False
             try:
-                qdrant.ensure_collection(embedder.dimension)
-
                 for idx, aid in enumerate(candidates, start=1):
                     try:
                         art_row = stage_repo.assert_artifact_approved_for_publish(aid)
@@ -185,12 +188,13 @@ class PublicationService:
                             raise
                         continue
 
+                    active_model_name = embedder.model_name if embedder is not None else model_name
                     # Fast-path idempotency check before loading JSON or computing embeddings
                     existing_pub = pub_repo.get_publication_by_artifact(aid)
                     if (
                         existing_pub is not None
                         and existing_pub.status == "published"
-                        and existing_pub.embedding_model == embedder.model_name
+                        and existing_pub.embedding_model == active_model_name
                         and existing_pub.qdrant_collection == collection
                     ):
                         summary.skipped_idempotent += 1
@@ -207,11 +211,19 @@ class PublicationService:
                         scope=scope,
                     )
 
-                    # Pre-compute embeddings for this artifact's chunks before SQLite commit
-                    vectors = (
-                        embedder.embed_documents([c.text for c in chunking.chunks])
-                        if chunking.chunks
-                        else []
+                    # Lazily load the embedding model ONLY if there are chunks to embed
+                    # (so pure structured JEvents schedule publishes stay lightweight & fast!)
+                    vectors: list[list[float]] = []
+                    if chunking.chunks:
+                        if embedder is None:
+                            embedder = create_embedder(model_name)
+                        if not collection_ready:
+                            qdrant.ensure_collection(embedder.dimension)
+                            collection_ready = True
+                        vectors = embedder.embed_documents([c.text for c in chunking.chunks])
+
+                    effective_model_name = (
+                        embedder.model_name if embedder is not None else model_name
                     )
 
                     now = datetime.now(UTC)
@@ -229,7 +241,7 @@ class PublicationService:
                             asset_url=asset_url,
                             chunks=chunking.chunks,
                             tables=staged.tables,
-                            embedding_model=embedder.model_name,
+                            embedding_model=effective_model_name,
                             qdrant_collection=collection,
                             supersede_policy_rule_id=latest_wins_rule,
                             now_utc=now,
@@ -247,6 +259,19 @@ class PublicationService:
                     if outcome.action == "skipped_stale_version":
                         summary.skipped_stale += 1
                         continue
+
+                    # Phase 4: Reconcile approved blood donation schedules into SQLite + FTS5
+                    if (
+                        staged.category == DiscoveryCategory.DONATION_SCHEDULE
+                        or staged.structured_events
+                    ):
+                        sched_out = sched_repo.publish_schedule_artifact_atomic(
+                            artifact_id=aid,
+                            publication_id=outcome.publication_id,
+                            staged=staged,
+                            now_utc=now,
+                        )
+                        summary.schedule_sessions_published += len(sched_out.session_ids)
 
                     # Upsert approved chunk vectors into Qdrant with full AGENTS.md payload
                     if chunking.chunks:
@@ -305,11 +330,12 @@ class PublicationService:
                             f"chunks={summary.chunks_upserted} tables={summary.tables_published}"
                         )
 
-                # Sync pending_change flags across SQLite and Qdrant
+                # Sync pending_change flags across SQLite, schedules, and Qdrant
                 pending_updates = pub_repo.sync_pending_change_flags()
                 for pub_id, is_pending in pending_updates:
                     qdrant.update_pending_change(pub_id, pending_change=is_pending)
-                summary.pending_change_updates = len(pending_updates)
+                sched_pending = sched_repo.sync_schedule_pending_change_flags()
+                summary.pending_change_updates = len(pending_updates) + sched_pending
 
                 # Optional retirement reconciliation (linked -> no_longer_linked -> retired)
                 if reconcile_retirement:
