@@ -1,0 +1,482 @@
+# PDN Multimodal Knowledge Sync — Phase 3 Retrieval Evaluation Benchmark
+# Owner-reviewed set of 40 Malay (22) and English (18) questions grounded strictly
+# in Gate-B-approved PDN resources (non-JEvents Track 1).
+schema_version: 1
+description: >-
+  40 realistic Malay and English chatbot questions covering donor eligibility,
+  deferrals, operating hours, static donation centres, blood supply status,
+  hotlines, FAQs, clinical PDF guidelines, corporate info, and PDPA-safe staff
+  directory lookups.
+
+questions:
+  # --- 1. Donor Eligibility & Deferrals (10 questions: 5 MS, 5 EN) ---
+  - id: q01_basic_criteria_ms
+    lang: ms
+    category: eligibility_deferral
+    query: Apakah syarat asas kelayakan umur dan berat badan untuk menderma darah di PDN?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/poster/PosterKriteriaPendermaanDarah.jpg
+      - https://pdn.gov.my/v2/images/poster/2024/Kad_Kecil_Kriteria_Pendermaan_Darah.jpg
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2
+    expected_facts:
+      - "45kg"
+      - "17"
+    search_target: knowledge
+
+  - id: q02_basic_criteria_en
+    lang: en
+    category: eligibility_deferral
+    query: What are the age limits for first-time and regular blood donors in Malaysia?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2
+      - https://pdn.gov.my/v2/images/poster/PosterKriteriaPendermaanDarah.jpg
+      - https://pdn.gov.my/v2/images/poster/2024/Kad_Kecil_Kriteria_Pendermaan_Darah.jpg
+    expected_facts:
+      - "60"
+      - "70"
+    search_target: knowledge
+
+  - id: q03_needle_procedures_ms
+    lang: ms
+    category: eligibility_deferral
+    query: Berapa tempoh penangguhan menderma darah selepas bertatu, bertindik, berbekam atau akupunktur mulai Ogos 2025?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Needle_Related_Procedures_-_Updated_Guideline.png
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2
+    expected_facts:
+      - "1 OGOS 2025"
+    search_target: knowledge
+
+  - id: q04_needle_procedures_en
+    lang: en
+    category: eligibility_deferral
+    query: What is the updated blood donation deferral guideline for needle-related procedures like tattoo, piercing, or acupuncture?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Needle_Related_Procedures_-_Updated_Guideline.png
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2
+    expected_facts:
+      - "NEEDLE RELATED PROCEDURES"
+    search_target: knowledge
+
+  - id: q05_vcjd_europe_en
+    lang: en
+    category: eligibility_deferral
+    query: Can people who lived in Europe between 1980 and 1996 now donate blood in Malaysia under the vCJD update?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Variant_Creutzfeldt-Jakob_Disease_vCJD_-_Updated_Guideline.png
+    expected_facts:
+      - "1980-1996"
+      - "lifted"
+    search_target: knowledge
+
+  - id: q06_vcjd_europe_ms
+    lang: ms
+    category: eligibility_deferral
+    query: Adakah individu yang pernah tinggal di Eropah dari 1980 hingga 1996 kini dibenarkan menderma darah berkaitan risiko vCJD?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Variant_Creutzfeldt-Jakob_Disease_vCJD_-_Updated_Guideline.png
+    expected_facts:
+      - "vCJD"
+    search_target: knowledge
+
+  - id: q07_mpox_travel_en
+    lang: en
+    category: eligibility_deferral
+    query: Are travellers returning from Mpox affected countries temporarily deferred from donating blood?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Mpoxbanner.png
+      - https://pdn.gov.my/v2/images/risalah/Rmpox1.jpg
+    expected_facts:
+      - "MPOX"
+      - "DEFERRED"
+    search_target: knowledge
+
+  - id: q08_mpox_prevention_ms
+    lang: ms
+    category: eligibility_deferral
+    query: Bagaimana virus Mpox ditularkan kepada manusia dan apakah langkah pencegahannya?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/risalah/RisalahMpox2.jpg
+      - https://pdn.gov.my/v2/images/risalah/RisalahMpox3.jpg
+      - https://pdn.gov.my/v2/images/risalah/RisalahMpox4.jpg
+    expected_facts:
+      - "MPOX"
+    search_target: knowledge
+
+  - id: q09_newlywed_deferral_ms
+    lang: ms
+    category: eligibility_deferral
+    query: Apakah pembaharuan tempoh penangguhan pendermaan darah bagi pasangan baru berkahwin atau mempunyai pasangan seks baharu?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Pasangan_Baru_Berkahwin_-_Updated_Guideline.png
+    expected_facts:
+      - "PASANGAN BARU BERKAHWIN"
+    search_target: knowledge
+
+  - id: q10_apheresis_eligibility_ms
+    lang: ms
+    category: eligibility_deferral
+    query: Siapakah yang layak menjadi penderma aferesis dan apakah had umur penderma aferesis?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/risalah/Risalah_Aferesis2.jpg
+      - https://pdn.gov.my/v2/images/risalah/Risalah_Aferesis1.jpg
+    expected_facts:
+      - "Aferesis"
+      - "18"
+    search_target: knowledge
+
+  # --- 2. Operating Hours & Static Donation Centres (8 questions: 4 MS, 4 EN) ---
+  - id: q11_pdn_jtr_hours_ms
+    lang: ms
+    category: operating_hours
+    query: Apakah waktu operasi Pusat Darah Negara Jalan Tun Razak pada hari Isnin hingga Jumaat dan hujung minggu?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/Donation_Suite_2025/Pusat_Darah_Negara.jpg
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/WaktuOperasiApril2024.png
+      - https://pdn.gov.my/v2/index.php/hubungi-kami/pusat-pendermaan-darah-statik
+    expected_facts:
+      - "7.30"
+      - "Jalan Tun Razak"
+    search_target: knowledge
+
+  - id: q12_mid_valley_suite_en
+    lang: en
+    category: static_centres
+    query: What are the operating hours, floor location, and phone number for the PDN Donation Suite at Mid Valley Megamall?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/Donation_Suite_2025/PDN_Donation_Suite_Mid_Valley_Megamall.jpg
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/WaktuOperasiApril2024.png
+    expected_facts:
+      - "Mid Valley Megamall"
+      - "10.00"
+      - "9.00"
+    search_target: knowledge
+
+  - id: q13_one_utama_suite_en
+    lang: en
+    category: static_centres
+    query: Where is the St John Ambulance 1 Utama Blood Donation Suite located and what are its daily operating hours?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/Donation_Suite_2025/St_John_Ambulance_1_Utama.jpg
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/WaktuOperasiApril2024.png
+    expected_facts:
+      - "Basement 2"
+      - "11.00"
+      - "7.00"
+    search_target: both
+
+  - id: q14_ioi_city_mall_ms
+    lang: ms
+    category: static_centres
+    query: Di manakah lokasi Suite Derma Darah St John Ambulance IOI City Mall Putrajaya dan waktu operasinya?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/Donation_Suite_2025/St_John_Ambulance_IOI_City_Mall.jpg
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/WaktuOperasiApril2024.png
+    expected_facts:
+      - "IOI City Mall"
+      - "Basement 3"
+    search_target: knowledge
+
+  - id: q15_mobile_drive_break_ms
+    lang: ms
+    category: operating_hours
+    query: Bilakah waktu rehat bagi kempen derma darah bergerak tertentu Pusat Darah Negara yang mempunyai Sesi 1 dan Sesi 2?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/Notis_Makluman_2025.png
+    expected_facts:
+      - "1.45"
+      - "2.30"
+    search_target: knowledge
+
+  - id: q16_state_blood_banks_ms
+    lang: ms
+    category: static_centres
+    query: Di manakah senarai pusat pendermaan dan kutipan darah hospital KKM di seluruh negeri di Malaysia?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/it_pdn/2024/9December2024Asenaraipusatkutipandarah.png
+      - https://pdn.gov.my/v2/index.php/hubungi-kami/pusat-kutipan-darah-seluruh-negeri
+    expected_facts:
+      - "HOSPITAL"
+    search_target: knowledge
+
+  - id: q17_static_centres_overview_en
+    lang: en
+    category: static_centres
+    query: Which static blood donation centres are operated by Pusat Darah Negara in Kuala Lumpur and Selangor?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/SmartSlider3/2025/WaktuOperasiApril2024.png
+      - https://pdn.gov.my/v2/index.php/hubungi-kami/pusat-pendermaan-darah-statik
+      - https://pdn.gov.my/v2/images/Donation_Suite_2025/Pusat_Darah_Negara.jpg
+    expected_facts:
+      - "MID VALLEY"
+      - "1 UTAMA"
+    search_target: knowledge
+
+  - id: q18_one_utama_table_en
+    lang: en
+    category: static_centres
+    query: St John Ambulance 1 Utama Blood Donation Suite operating hours and email table
+    expected_urls:
+      - https://pdn.gov.my/v2/images/Donation_Suite_2025/St_John_Ambulance_1_Utama.jpg
+    expected_facts:
+      - "pdn@moh.gov.my"
+      - "11.00 pagi"
+    search_target: tables
+
+  # --- 3. Blood Supply Status & Hotlines (4 questions: 2 MS, 2 EN) ---
+  - id: q19_blood_stock_ms
+    lang: ms
+    category: blood_stock
+    query: Apakah status paras stok bekalan darah kumpulan O, A, B dan AB di Pusat Darah Negara bagi 17 September 2026?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/stokdarah/1stockseptember2026.png
+    expected_facts:
+      - "Paras Selamat"
+      - "17 September 2026"
+    search_target: both
+
+  - id: q20_blood_stock_en
+    lang: en
+    category: blood_stock
+    query: What is the latest reported blood supply stock status for blood groups O, A, B, and AB at Pusat Darah Negara?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/stokdarah/1stockseptember2026.png
+    expected_facts:
+      - "Paras Selamat"
+      - "AB"
+    search_target: both
+
+  - id: q21_pdn_hotline_ms
+    lang: ms
+    category: hotlines_contact
+    query: Apakah nombor telefon Talian Utama PDN, Kaunter Temujanji Aferesis, dan Unit Perhubungan Awam untuk kempen derma darah?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/hotline/Talian_Utama_PDN_Ogos_2025.png
+      - https://pdn.gov.my/v2/index.php/hubungi-kami/talian-utama
+    expected_facts:
+      - "03-2613 2688"
+      - "03-2613 2777"
+      - "03-2613 2682"
+    search_target: both
+
+  - id: q22_pdn_hotline_table_en
+    lang: en
+    category: hotlines_contact
+    query: PDN hotline telephone numbers for apheresis appointment counter and donor clinic
+    expected_urls:
+      - https://pdn.gov.my/v2/images/hotline/Talian_Utama_PDN_Ogos_2025.png
+    expected_facts:
+      - "03-2613 5600"
+      - "03-2613 2682"
+    search_target: tables
+
+  # --- 4. FAQs, Education & Standalone Tools (8 questions: 5 MS, 3 EN) ---
+  - id: q23_general_faq_ms
+    lang: ms
+    category: faq_donation
+    query: Berapa banyak darah yang diambil semasa menderma dan berapa lama masa diambil untuk menderma darah?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/101
+    expected_facts:
+      - "darah"
+    search_target: knowledge
+
+  - id: q24_blood_components_ms
+    lang: ms
+    category: faq_donation
+    query: Apakah jenis komponen darah yang boleh dihasilkan daripada satu beg darah yang didermakan?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/85
+    expected_facts:
+      - "Sel Darah Merah"
+      - "Plasma"
+      - "Platelet"
+    search_target: knowledge
+
+  - id: q25_cord_blood_faq_ms
+    lang: ms
+    category: faq_donation
+    query: Apakah itu darah tali pusat dan apakah kelebihannya berbanding darah lain?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/100
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+      - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/100
+      - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/100-faqs-darah-tali-pusat-pusat-koordinasi-sel-stem-kebangsaan
+    expected_facts:
+      - "uri"
+      - "sel induk"
+    search_target: knowledge
+
+  - id: q26_anemia_symptoms_ms
+    lang: ms
+    category: faq_donation
+    query: Apakah itu anemia, tanda-tanda anemia, dan bagaimana anemia dikenalpasti sebelum menderma darah?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/penderma_darah/Anemia.jpg
+      - https://pdn.gov.my/v2/images/poster/2024/Kad_Kecil_Anemia.jpg
+      - https://pdn.gov.my/v2/images/poster/PosterAnemia.jpg
+      - https://pdn.gov.my/v2/images/risalah/Risalah_apa_itu_anemia_2.jpg
+    expected_facts:
+      - "Anemia"
+      - "hemoglobin"
+    search_target: knowledge
+
+  - id: q27_anemia_prevention_en
+    lang: en
+    category: faq_donation
+    query: How can anemia be prevented through iron-rich food and detected by a hemoglobin blood test?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/risalah/Risalah_apa_itu_anemia_1.jpg
+      - https://pdn.gov.my/v2/images/poster/PosterAnemia.jpg
+      - https://pdn.gov.my/v2/images/poster/2024/Kad_Kecil_Anemia.jpg
+    expected_facts:
+      - "zat besi"
+    search_target: knowledge
+
+  - id: q28_next_donation_calculator_ms
+    lang: ms
+    category: faq_donation
+    query: Di manakah kalkulator untuk mengetahui tarikh pendermaan darah utuh seterusnya?
+    expected_urls:
+      - https://pdn.gov.my/v2/kalkulator_tarikh_pendermaan_darah_utuh
+    expected_facts:
+      - "Kalkulator Tarikh Pendermaan Darah"
+    search_target: knowledge
+
+  - id: q29_nhcc_haemovigilance_en
+    lang: en
+    category: faq_donation
+    query: What is the role of the National Haemovigilance Coordinating Centre (NHCC) at Pusat Darah Negara?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/67
+      - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment
+    expected_facts:
+      - "keselamatan darah"
+    search_target: knowledge
+
+  - id: q30_mrik_reference_lab_en
+    lang: en
+    category: faq_donation
+    query: What services and units are under the National Immunohematology Reference Laboratory (MRIK)?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/informasi/bahan-pendidikan-2/item/61
+      - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-national-surveillance-assessment/item/61
+      - https://pdn.gov.my/v2/images/MRIK/2024/MRIK_-_Customer_Referral_Guide.pdf
+    expected_facts:
+      - "MRIK"
+    search_target: knowledge
+
+  # --- 5. Clinical PDF Guidelines, Forms & Organizers (6 questions: 2 MS, 4 EN) ---
+  - id: q31_campaign_organizer_pdf_ms
+    lang: ms
+    category: clinical_pdf
+    query: Apakah syarat lokasi yang tidak dibenarkan dalam garis panduan penganjuran kempen derma darah?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/it_pdn/2023_Dokumen/GARIS_PANDUAN_PENGANJURAN_KEMPEN_DERMA_DARAH.pdf
+    expected_facts:
+      - "Bertangga"
+      - "Tempat panas"
+    search_target: knowledge
+
+  - id: q32_transfusion_reaction_pdf_en
+    lang: en
+    category: clinical_pdf
+    query: What immediate action must be taken when a patient has an adverse reaction to blood transfusion?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/dokumen/REQUEST-FORM-FOR-TRANSFUSION-REACTION-INVESTIGATION.pdf
+      - https://pdn.gov.my/v2/images/dokumen/Reporting_form_for_transfusion_related_adverse_event_BTSHV320161.pdf
+      - https://pdn.gov.my/v2/images/dokumen/HANDBOOK_ON_CLINICAL_USE_OF_BLOOD_v2.021.10.2020.pdf
+    expected_facts:
+      - "STOP transfusion"
+    search_target: knowledge
+
+  - id: q33_clinical_handbook_en
+    lang: en
+    category: clinical_pdf
+    query: Where can clinicians find the Handbook on Clinical Use of Blood 3rd edition published by the National Blood Centre?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/dokumen/HANDBOOK_ON_CLINICAL_USE_OF_BLOOD_v2.021.10.2020.pdf
+      - https://pdn.gov.my/v2/images/dokumen/ebook_blood_transfusion_guideline.pdf
+    expected_facts:
+      - "HANDBOOK ON CLINICAL USE OF BLOOD"
+    search_target: knowledge
+
+  - id: q34_hi_user_guideline_en
+    lang: en
+    category: clinical_pdf
+    query: What is the contact number and user guideline for Histocompatibility and Immunogenetic (H&I) HLA typing requests at PDN?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/BahagianHNI/DokumenRujukan/2024/PDN_HI_QP01_G02_User_Guidelines_HI_ver_01_2024.pdf
+      - https://pdn.gov.my/v2/images/BahagianHNI/DokumenRujukan/2024/PDN_HI_QP02_01_HLA_TYPING_REQUEST_FORM_ver_02_2024.pdf
+      - https://pdn.gov.my/v2/index.php/perkhidmatan/bahagian-histokompatibiliti-immunogenetik
+    expected_facts:
+      - "HLA"
+    search_target: knowledge
+
+  - id: q35_cord_blood_search_form_en
+    lang: en
+    category: clinical_pdf
+    query: How do hospitals submit a formal search request for a cord blood unit or matched unrelated donor to NSCCC?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/BahagianHNI/DokumenRujukan/2024/FORMAL_SEARCH_REQUEST_FOR_CORD_BLOOD_UNIT.pdf
+      - https://pdn.gov.my/v2/images/BahagianHNI/DokumenRujukan/2024/FORMAL_SEARCH_REQUEST_FOR_MATCHED_UNRELATED_DONOR.pdf
+      - https://pdn.gov.my/v2/images/BahagianHNI/DokumenRujukan/2024/PRELIMINARY_SEARCH_REQUEST_FORM.pdf
+    expected_facts:
+      - "nsccc@moh.gov.my"
+    search_target: knowledge
+
+  - id: q36_donor_registration_form_ms
+    lang: ms
+    category: clinical_pdf
+    query: Di manakah borang pendaftaran penderma darah rasmi Perkhidmatan Transfusi Darah KKM?
+    expected_urls:
+      - https://pdn.gov.my/v2/images/Borang2025/Borang_Pendaftaran_Penderma_Darah.pdf
+      - https://pdn.gov.my/v2/images/Borang2025/Blood_Donor_Registration_Form.pdf
+      - https://pdn.gov.my/v2/images/dokumen/BLOOD-DONOR-REGISTRATION-FORM.pdf
+    expected_facts:
+      - "BORANG PENDAFTARAN PENDERMA DARAH"
+    search_target: knowledge
+
+  # --- 6. Corporate Info & PDPA-Safe Staff Directory (4 questions: 4 MS) ---
+  - id: q37_vision_mission_ms
+    lang: ms
+    category: corporate
+    query: Apakah Visi dan Misi Pusat Darah Negara Malaysia?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/maklumat-korporat/visi-misi-objektif
+    expected_facts:
+      - "VISI"
+      - "MISI"
+    search_target: knowledge
+
+  - id: q38_client_charter_ms
+    lang: ms
+    category: corporate
+    query: Apakah kandungan Piagam Pelanggan Pusat Darah Negara kepada penderma darah dan pesakit?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/maklumat-korporat/piagam-pelanggan
+    expected_facts:
+      - "keselamatan dan kesihatan penderma"
+    search_target: knowledge
+
+  - id: q39_director_pdn_ms
+    lang: ms
+    category: staff_directory
+    query: Siapakah Pengarah Pusat Darah Negara dalam carta organisasi terkini dan apakah nombor pejabat Dr. Nor Nazahah binti Mahmud?
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/31-direktori-pengurusan-tertinggi/2-dr-nor-nazahah-binti-mahmud
+      - https://pdn.gov.my/v2/images/it_pdn/2026/CARTA_ORGANISASI_PDN_SEP_2026.png
+    expected_facts:
+      - "Nor Nazahah"
+    search_target: both
+
+  - id: q40_staff_phone_table_ms
+    lang: ms
+    category: staff_directory
+    query: Nombor telefon pejabat Dr. Zalina binti Mahmood di Direktori Pengurusan Tertinggi PDN
+    expected_urls:
+      - https://pdn.gov.my/v2/index.php/hubungi-kami/direktori-pegawai/31-direktori-pengurusan-tertinggi/3-dr-tun-maizura-binti-mohd-fathullah
+    expected_facts:
+      - "03 2613 2601"
+      - "Zalina"
+    search_target: tables

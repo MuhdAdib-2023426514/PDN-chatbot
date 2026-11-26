@@ -12,10 +12,10 @@ A production-oriented, locally reproducible **continuous knowledge ingestion sys
   - **Gate B (Content Publication):** Extracted JSON + Markdown artifacts are staged and validated first. Publishing requires explicit approval bound to the immutable artifact hash and `semantic_hash`.
 - **Safe defaults:** Live requests fail closed unless `PDN_CONTACT_EMAIL` is configured, `/v2/robots.txt` is respected, `docs/source-policy.md` is acknowledged, and `PDN_LIVE_CRAWL_ENABLED=true` is explicitly enabled.
 
-## Quickstart (Phases 0–2 — Python 3.12 via `uv`)
+## Quickstart (Phases 0–3 — Python 3.12 via `uv`, Zero Docker Required)
 
 ```bash
-# 1. Sync Python 3.12 environment (include --all-extras for Docling PDF & PaddleOCR PP-OCRv6)
+# 1. Sync Python 3.12 environment (Docling PDF, PaddleOCR PP-OCRv6, sentence-transformers)
 uv sync --all-extras
 uv run pdn-sync db upgrade
 
@@ -43,9 +43,17 @@ uv run pdn-sync stage approve --all-valid --dry-run
 uv run pdn-sync stage override <artifact_id> --file verified_transcription.md
 uv run pdn-sync reextract --extractor html --dry-run
 uv run pdn-sync fixtures capture "https://pdn.gov.my/v2/"
-uv run pdn-sync publish --approved-only --dry-run
 
-# 6. Run quality checks & test suite
+# 6. Phase 3: Approved-only publication, retrieval eval, read-only API, and scheduled worker
+uv run pdn-sync publish --approved-only --dry-run
+uv run pdn-sync publish --approved-only --execute
+uv run pdn-sync status
+uv run pdn-sync eval run --questions tests/eval/questions.yaml
+uv run pdn-sync api serve --host 127.0.0.1 --port 8000
+uv run pdn-sync worker run-once --profile publish_sync
+# Optional: docker compose --profile qdrant up -d  (set PDN_QDRANT_URL=http://127.0.0.1:6333)
+
+# 7. Run quality checks & test suite
 uv run ruff format --check .
 uv run ruff check .
 uv run mypy src tests
@@ -55,10 +63,12 @@ uv run pytest -v
 ## Key Documents & Configs
 
 - [AGENTS.md](AGENTS.md) — Architecture, non-negotiable rules, contracts, and phased rollout gates
-- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Stage checklist, verified package versions, Phase 2 benchmarks, and risks
+- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Stage checklist, verified package versions, Phase 2–3 benchmarks, and risks
+- [docs/decisions/ADR-orchestration.md](docs/decisions/ADR-orchestration.md) — Phase 3 orchestration decision record (single worker + SQLite WAL + dual-mode Qdrant)
 - [docs/source-policy.md](docs/source-policy.md) — Live verification evidence, PDPA guidance, and 5-point clearance checklist
 - [docs/crawl-scope-review.md](docs/crawl-scope-review.md) — Gate A reviewer workflow for `config/crawl_scope.yaml`
 - [docs/extraction-review.md](docs/extraction-review.md) — Gate B staging, batch approval, quarantine override, and `reextract` guide
-- [docs/data-contracts.md](docs/data-contracts.md) — `semantic_hash` specification + golden vectors, inventory, staging, and API contracts
+- [docs/data-contracts.md](docs/data-contracts.md) — `semantic_hash` specification + golden vectors, inventory, staging, Qdrant payload, and API contracts
 - [config/crawl_scope.yaml](config/crawl_scope.yaml) — Human-owned Gate A scope authority (never overwritten by discovery)
-- [config/ingestion_policy.yaml](config/ingestion_policy.yaml) — Gate B review mode, critical-fact rules, OCR thresholds, and bounds
+- [config/ingestion_policy.yaml](config/ingestion_policy.yaml) — Gate B review mode, critical-fact rules, OCR thresholds, and indexing policy
+- [tests/eval/questions.yaml](tests/eval/questions.yaml) — Owner-approved 40-question Malay/English retrieval evaluation suite

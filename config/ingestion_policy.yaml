@@ -52,3 +52,7 @@ critical_facts:
 indexing:
   small_table_max_rows_for_qdrant: 30
   embed_donation_schedule_rows: false
+  include_staff_directory_in_qdrant: true
+  chunk_target_chars: 1000
+  chunk_overlap_chars: 150
+  embedding_model: BAAI/bge-m3

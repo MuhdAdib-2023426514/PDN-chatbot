@@ -76,8 +76,28 @@ One immutable UTF-8 JSON artifact + Markdown (`.md`) companion per approved reso
 
 ## 4. Phase 3–4 Read-Only Chatbot API Contract
 
-All endpoints expose **only** published, non-superseded, non-retired records:
-- `GET /v1/knowledge/search?q=<query>&lang=<ms|en|any>&category=<optional>&limit=<1..20>`
-- `GET /v1/tables?q=<optional>&source_url=<optional>&limit=<1..20>`
-- `GET /v1/events?date=<YYYY-MM-DD>&date_from=&date_to=&state=&q=&limit=<1..50>` *(Phase 4)*
-- `GET /healthz` and `GET /v1/status`
+All endpoints expose **only** published, non-superseded, non-retired records (`status == "published"`), bound to `127.0.0.1:8000` by default:
+
+### `GET /v1/knowledge/search?q=<query>&lang=<ms|en|any>&category=<optional>&limit=<1..20>`
+Dense multilingual vector retrieval (`BAAI/bge-m3`, 1024d cosine, Qdrant `pdn_knowledge_v1`):
+- Response envelope: `{query, lang, category, total, results[]}`
+- Each item in `results[]`:
+  - `chunk_id`, `text`, `score`, `title`, `section`, `category`, `language`, `source_url`, `asset_url`, `content_type`, `last_verified_at`, `source_effective_date`, `valid_until`, `pending_change`.
+- Language filter semantics: `lang=ms` matches `ms` and `ms+en`; `lang=en` matches `en` and `ms+en`; `lang=any` matches all.
+
+### `GET /v1/tables?q=<optional>&source_url=<optional>&limit=<1..20>`
+Authoritative SQLite + FTS5 (`unicode61 remove_diacritics 2` + `trigram` + bounded `RapidFuzz` fallback) structured table retrieval:
+- Response envelope: `{query, source_url, total, results[]}`
+- Each item in `results[]`:
+  - `table_id`, `caption`, `headers[]`, `rows[][]`, `units[]`, `source_url`, `category`, `last_verified_at`, `source_effective_date`, `valid_until`, `pending_change`.
+
+### `GET /v1/events?date=<YYYY-MM-DD>&date_from=&date_to=&state=&q=&limit=<1..50>` *(Phase 4)*
+Deferred until Phase 4 bounded JEvents structured schedule ingestion.
+
+### `GET /healthz` and `GET /v1/status`
+- `/healthz`: `{status, sqlite, qdrant, qdrant_mode, qdrant_published_points}`
+- `/v1/status`: `{published_documents, published_chunks, published_tables, superseded_documents, retired_documents, pending_change_documents, approved_unpublished_artifacts, pending_gate_b, quarantined_gate_b, active_embedding_model, active_qdrant_collection, qdrant_mode, qdrant_published_points, last_completed_runs_by_profile}`
+
+### Qdrant Point Payload Contract (`pdn_knowledge_v1`)
+Deterministic UUIDv5 point ID derived from `pdn-sync:{resource_id}:{resource_version_id}:{chunk_index}` with payload fields:
+`chunk_id`, `document_id`, `publication_id`, `resource_id`, `resource_version_id`, `artifact_id`, `source_url`, `asset_url`, `title`, `section`, `category`, `language`, `content_type`, `last_verified_at`, `source_effective_date`, `valid_from`, `valid_until`, `pending_change`, `status`, `text`.

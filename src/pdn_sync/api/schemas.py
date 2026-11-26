@@ -1,0 +1,90 @@
+"""Pydantic response schemas for the Phase 3 read-only chatbot API."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict
+
+
+class KnowledgeChunkHit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    chunk_id: str
+    text: str
+    score: float
+    title: str | None = None
+    section: str | None = None
+    category: str
+    language: str
+    source_url: str
+    asset_url: str | None = None
+    content_type: str | None = None
+    last_verified_at: str
+    source_effective_date: str | None = None
+    valid_until: str | None = None
+    pending_change: bool = False
+
+
+class KnowledgeSearchResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    query: str
+    lang: str
+    category: str | None = None
+    total: int
+    results: list[KnowledgeChunkHit]
+
+
+class PublishedTableHit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    table_id: str
+    caption: str | None = None
+    headers: list[str]
+    rows: list[list[str]]
+    units: list[str | None]
+    source_url: str
+    category: str
+    last_verified_at: str
+    source_effective_date: str | None = None
+    valid_until: str | None = None
+    pending_change: bool = False
+
+
+class TableSearchResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    query: str | None = None
+    source_url: str | None = None
+    total: int
+    results: list[PublishedTableHit]
+
+
+class HealthResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: str
+    sqlite: str
+    qdrant: str
+    qdrant_mode: str
+    qdrant_published_points: int
+
+
+class StatusResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    published_documents: int
+    published_chunks: int
+    published_tables: int
+    superseded_documents: int
+    retired_documents: int
+    pending_change_documents: int
+    approved_unpublished_artifacts: int
+    pending_gate_b: int
+    quarantined_gate_b: int
+    active_embedding_model: str | None = None
+    active_qdrant_collection: str | None = None
+    qdrant_mode: str
+    qdrant_published_points: int
+    last_completed_runs_by_profile: dict[str, dict[str, Any]]

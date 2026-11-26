@@ -429,10 +429,13 @@ class StagingRepository:
                     f"Gate B blocked {artifact_id}: validation_status={art.validation_status!r}"
                 )
 
-            if art.review_status != ReviewStatus.APPROVED.value:
+            if art.review_status not in {
+                ReviewStatus.APPROVED.value,
+                ReviewStatus.PUBLISHED.value,
+            }:
                 raise GateBPublishBlockedError(
                     f"Gate B blocked {artifact_id}: review_status={art.review_status!r} "
-                    "(must be 'approved')"
+                    "(must be 'approved' or 'published')"
                 )
 
             decision = session.scalar(

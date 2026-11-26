@@ -86,6 +86,17 @@ class IndexingPolicy(BaseModel):
 
     small_table_max_rows_for_qdrant: int = Field(default=30, ge=0, le=200)
     embed_donation_schedule_rows: bool = Field(default=False)
+    include_staff_directory_in_qdrant: bool = Field(default=True)
+    chunk_target_chars: int = Field(default=1000, ge=200, le=4000)
+    chunk_overlap_chars: int = Field(default=150, ge=0, le=1000)
+    embedding_model: str = Field(default="BAAI/bge-m3", min_length=1)
+
+    @model_validator(mode="after")
+    def validate_chunk_overlap(self) -> IndexingPolicy:
+        if self.chunk_overlap_chars >= self.chunk_target_chars:
+            msg = "chunk_overlap_chars must be < chunk_target_chars"
+            raise ValueError(msg)
+        return self
 
 
 class IngestionPolicyConfig(BaseModel):

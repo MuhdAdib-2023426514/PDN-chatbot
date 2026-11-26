@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import (
+    Boolean,
     DateTime,
     Float,
     ForeignKey,
@@ -255,3 +256,170 @@ class ReviewDecisionRow(Base):
     semantic_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     carried_from_decision_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class PublicationVersionRow(Base):
+    __tablename__ = "publication_versions"
+    __table_args__ = (
+        Index("ix_pub_versions_resource_status", "resource_id", "status"),
+        Index("ix_pub_versions_policy_status", "policy_rule_id", "status"),
+        Index("ix_pub_versions_resource_seq", "resource_id", "version_seq"),
+    )
+
+    publication_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    artifact_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("staged_artifacts.artifact_id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    resource_version_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("resource_versions.version_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    version_seq: Mapped[int] = mapped_column(Integer, nullable=False)
+    semantic_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    policy_rule_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    embedding_model: Mapped[str] = mapped_column(String(128), nullable=False)
+    qdrant_collection: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="published")
+    valid_from_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    valid_until_utc: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    published_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    superseded_by_pub_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    pending_change: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+
+class KnowledgeDocumentRow(Base):
+    __tablename__ = "knowledge_documents"
+    __table_args__ = (
+        Index("ix_knowledge_docs_status_category", "status", "category"),
+        Index("ix_knowledge_docs_source_url", "source_url"),
+    )
+
+    doc_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    publication_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("publication_versions.publication_id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    artifact_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("staged_artifacts.artifact_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    resource_version_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    asset_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resource_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    category: Mapped[str] = mapped_column(String(64), nullable=False)
+    title: Mapped[str | None] = mapped_column(Text, nullable=True)
+    language: Mapped[str] = mapped_column(String(16), nullable=False)
+    content_type: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    last_verified_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    source_effective_date: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    valid_from_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    valid_until_utc: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="published")
+    pending_change: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+
+class KnowledgeChunkRow(Base):
+    __tablename__ = "knowledge_chunks"
+    __table_args__ = (UniqueConstraint("publication_id", "chunk_index", name="uq_chunk_pub_index"),)
+
+    chunk_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    point_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    doc_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("knowledge_documents.doc_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    publication_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("publication_versions.publication_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    section: Mapped[str | None] = mapped_column(Text, nullable=True)
+    language: Mapped[str] = mapped_column(String(16), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    char_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    qdrant_synced_at_utc: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
+class StructuredTableRow(Base):
+    __tablename__ = "structured_tables"
+    __table_args__ = (
+        UniqueConstraint("publication_id", "table_index", name="uq_table_pub_index"),
+        Index("ix_structured_tables_status_category", "status", "category"),
+        Index("ix_structured_tables_source_url", "source_url"),
+    )
+
+    table_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    publication_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("publication_versions.publication_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    resource_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("crawl_resources.resource_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    artifact_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("staged_artifacts.artifact_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    category: Mapped[str] = mapped_column(String(64), nullable=False)
+    table_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    caption: Mapped[str | None] = mapped_column(Text, nullable=True)
+    headers_json: Mapped[str] = mapped_column(Text, nullable=False)
+    units_json: Mapped[str] = mapped_column(Text, nullable=False)
+    row_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    last_verified_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    source_effective_date: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    valid_from_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    valid_until_utc: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="published")
+    pending_change: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+
+class StructuredTableRowItem(Base):
+    __tablename__ = "structured_table_rows"
+    __table_args__ = (
+        UniqueConstraint("table_id", "row_index", name="uq_table_row_index"),
+        Index("ix_structured_table_rows_table_idx", "table_id", "row_index"),
+    )
+
+    row_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    table_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("structured_tables.table_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    row_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    cells_json: Mapped[str] = mapped_column(Text, nullable=False)
+    row_text: Mapped[str] = mapped_column(Text, nullable=False)
+    source_selector: Mapped[str | None] = mapped_column(String(128), nullable=True)

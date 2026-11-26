@@ -29,9 +29,20 @@ from pdn_sync.discovery.scope_manager import (
 )
 from pdn_sync.domain.policy import Disposition, ResourceType
 from pdn_sync.extractors.contracts import ReviewStatus
+from pdn_sync.indexing.embedder import create_embedder
+from pdn_sync.indexing.eval_runner import (
+    benchmark_embedding_models,
+    evaluate_retrieval,
+    load_eval_suite,
+)
+from pdn_sync.indexing.publisher import PublicationService
+from pdn_sync.indexing.qdrant_store import QdrantVectorStore
 from pdn_sync.persistence.db import create_sqlite_engine, upgrade_database
+from pdn_sync.persistence.publication_repo import PublicationRepository
 from pdn_sync.persistence.repository import ControlPlaneRepository, InventoryFilter
-from pdn_sync.persistence.staging_repo import StageQueueFilter
+from pdn_sync.persistence.staging_repo import GateBPublishBlockedError, StageQueueFilter
+from pdn_sync.scheduler.worker import WorkerProfile, run_profile_once, start_worker
+from pdn_sync.search.tables import StructuredTableSearchService
 from pdn_sync.staging.fixtures import FixtureCaptureBlockedError, capture_safe_fixture
 from pdn_sync.staging.gate_b import (
     ExtractionOptions,
@@ -49,12 +60,18 @@ inventory_app = typer.Typer(help="Inspect discovered URL and asset inventories."
 scope_app = typer.Typer(help="Gate A crawl-scope validation and management commands.")
 stage_app = typer.Typer(help="Gate B staged extraction review, diff, approval, and override.")
 fixtures_app = typer.Typer(help="Safe fixture capture commands (Gate-A & PDPA enforced).")
+api_app = typer.Typer(help="Read-only chatbot HTTP API commands (Phase 3+).")
+worker_app = typer.Typer(help="Single-process scheduled worker commands (ADR-orchestration.md).")
+eval_app = typer.Typer(help="Retrieval evaluation and multilingual embedding benchmarks.")
 
 app.add_typer(db_app, name="db")
 app.add_typer(inventory_app, name="inventory")
 app.add_typer(scope_app, name="scope")
 app.add_typer(stage_app, name="stage")
 app.add_typer(fixtures_app, name="fixtures")
+app.add_typer(api_app, name="api")
+app.add_typer(worker_app, name="worker")
+app.add_typer(eval_app, name="eval")
 
 
 @db_app.command("upgrade")
@@ -663,14 +680,32 @@ def publish(
     ] = True,
     dry_run: Annotated[
         bool,
-        typer.Option("--dry-run", help="Verify Gate B publish eligibility without indexing"),
+        typer.Option("--dry-run", help="Verify Gate B publish eligibility without writing"),
     ] = True,
+    execute: Annotated[
+        bool,
+        typer.Option("--execute", help="Publish Gate-B-approved artifacts to SQLite/FTS5/Qdrant"),
+    ] = False,
+    reconcile_retirement: Annotated[
+        bool,
+        typer.Option(
+            "--reconcile-retirement",
+            help="Also reconcile linked -> no_longer_linked -> retired from latest clean discovery",
+        ),
+    ] = False,
+    embedding_model: Annotated[
+        str | None,
+        typer.Option("--embedding-model", help="Override embedding model name"),
+    ] = None,
+    qdrant_collection: Annotated[
+        str | None,
+        typer.Option("--qdrant-collection", help="Override Qdrant collection name"),
+    ] = None,
     sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
     scope_file: Annotated[Path | None, typer.Option("--scope-file")] = None,
     policy_file: Annotated[Path | None, typer.Option("--policy-file")] = None,
-    data_dir: Annotated[Path | None, typer.Option("--data-dir")] = None,
 ) -> None:
-    """Verify Gate B publish eligibility (Qdrant/FTS5 activation happens in Phase 3 after ADR)."""
+    """Verify or execute Gate-B-approved publication into SQLite + FTS5 + Qdrant."""
     if not approved_only:
         typer.secho(
             "Refusing publish without --approved-only (Gate B mandatory).",
@@ -678,25 +713,234 @@ def publish(
             err=True,
         )
         raise typer.Exit(code=1)
-    if not dry_run:
+
+    settings = AppSettings()
+    effective_dry_run = False if execute else dry_run
+    pub_svc = PublicationService(
+        sqlite_path=sqlite_path or settings.sqlite_path,
+        scope_path=scope_file or settings.scope_file,
+        policy_path=policy_file or settings.ingestion_policy_file,
+        settings=settings,
+    )
+    try:
+        summary = pub_svc.publish_approved(
+            dry_run=effective_dry_run,
+            embedding_model=embedding_model,
+            qdrant_collection=qdrant_collection,
+            reconcile_retirement=reconcile_retirement,
+            progress_cb=lambda msg: typer.echo(f"[publish] {msg}"),
+        )
+    except (ConfigurationError, GateBPublishBlockedError, ValueError) as exc:
+        typer.secho(f"PUBLISH FAILED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    if effective_dry_run:
         typer.secho(
-            "Active Qdrant/FTS5 publication is disabled in Phase 2 until Phase 3 ADR approval.",
-            fg=typer.colors.YELLOW,
+            f"[DRY-RUN] Gate B publish check: eligible_approved={summary.published} "
+            f"blocked={summary.blocked}",
+            fg=typer.colors.GREEN,
+        )
+        return
+
+    typer.secho(
+        f"[PUBLISHED] model={summary.embedding_model} collection={summary.qdrant_collection} "
+        f"published={summary.published} skipped_idempotent={summary.skipped_idempotent} "
+        f"chunks={summary.chunks_upserted} tables={summary.tables_published} "
+        f"superseded={summary.superseded_publications} blocked={summary.blocked}",
+        fg=typer.colors.GREEN,
+    )
+
+
+@app.command("status")
+def status_cmd(
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Display operational readiness, published counts, and Gate B review backlog."""
+    settings = AppSettings()
+    db_path = sqlite_path or settings.sqlite_path
+    upgrade_database(db_path)
+    engine = create_sqlite_engine(db_path)
+    try:
+        pub_repo = PublicationRepository(engine)
+        summary = pub_repo.get_status_summary()
+    finally:
+        engine.dispose()
+
+    with QdrantVectorStore(
+        collection_name=settings.qdrant_collection,
+        url=settings.qdrant_url,
+        path=settings.qdrant_path,
+    ) as qdrant:
+        qd_ok, qd_points = qdrant.health_check()
+        summary["qdrant_mode"] = qdrant.mode
+        summary["qdrant_healthy"] = qd_ok
+        summary["qdrant_published_points"] = qd_points
+
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@api_app.command("serve")
+def api_serve(
+    host: Annotated[
+        str | None, typer.Option("--host", help="Bind host (default 127.0.0.1)")
+    ] = None,
+    port: Annotated[int | None, typer.Option("--port", help="Bind port (default 8000)")] = None,
+) -> None:
+    """Start the read-only FastAPI chatbot knowledge API."""
+    import uvicorn
+
+    from pdn_sync.api.app import create_app
+
+    settings = AppSettings()
+    bind_host = host or settings.api_host
+    bind_port = port or settings.api_port
+    typer.secho(
+        f"Starting PDN read-only chatbot API on http://{bind_host}:{bind_port}",
+        fg=typer.colors.GREEN,
+    )
+    uvicorn.run(create_app(settings=settings), host=bind_host, port=bind_port)
+
+
+@worker_app.command("run-once")
+def worker_run_once(
+    profile: Annotated[
+        str,
+        typer.Option(
+            "--profile",
+            help="Profile to run: homepage, site, discovery_audit, or publish_sync",
+        ),
+    ],
+    live: Annotated[bool, typer.Option("--live", help="Enable live network fetching")] = False,
+) -> None:
+    """Run one sync profile once in the foreground (framework-agnostic)."""
+    valid_profiles: tuple[WorkerProfile, ...] = (
+        "homepage",
+        "site",
+        "discovery_audit",
+        "publish_sync",
+    )
+    if profile not in valid_profiles:
+        typer.secho(
+            f"Invalid profile {profile!r}. Choose from: {', '.join(valid_profiles)}",
+            fg=typer.colors.RED,
             err=True,
         )
         raise typer.Exit(code=2)
 
-    _, svc = _make_gate_b_service(
-        scope_file=scope_file,
-        policy_file=policy_file,
-        sqlite_path=sqlite_path,
-        data_dir=data_dir,
-    )
-    ready, blocked = svc.check_publish_eligibility()
+    settings = AppSettings()
+    profile_map: dict[str, WorkerProfile] = {
+        "homepage": "homepage",
+        "site": "site",
+        "discovery_audit": "discovery_audit",
+        "publish_sync": "publish_sync",
+    }
+    typed_profile = profile_map[profile]
+    try:
+        out = run_profile_once(
+            typed_profile,
+            settings=settings,
+            live=live,
+            progress_cb=lambda msg: typer.echo(f"[worker:{profile}] {msg}"),
+        )
+    except (ConfigurationError, LiveCrawlBlockedError, RobotsUnavailableError, ValueError) as exc:
+        typer.secho(f"WORKER FAILED: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(json.dumps(out, indent=2, sort_keys=True))
+
+
+@worker_app.command("start")
+def worker_start(
+    live: Annotated[bool, typer.Option("--live", help="Enable live network fetching")] = False,
+) -> None:
+    """Start the single-process APScheduler worker (Asia/Kuala_Lumpur, max_instances=1)."""
+    settings = AppSettings()
     typer.secho(
-        f"[DRY-RUN] Gate B publish check: eligible_approved={len(ready)} blocked={len(blocked)}",
+        f"Starting PDN single-process scheduled worker (live={live})...",
         fg=typer.colors.GREEN,
     )
+    start_worker(settings=settings, live=live)
+
+
+@eval_app.command("run")
+def eval_run(
+    questions: Annotated[
+        Path,
+        typer.Option("--questions", help="Path to tests/eval/questions.yaml"),
+    ] = Path("tests/eval/questions.yaml"),
+    embedding_model: Annotated[
+        str | None,
+        typer.Option("--embedding-model", help="Override embedding model"),
+    ] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Evaluate retrieval accuracy against currently published Qdrant + SQLite FTS5 stores."""
+    settings = AppSettings()
+    db_path = sqlite_path or settings.sqlite_path
+    suite = load_eval_suite(questions)
+    upgrade_database(db_path)
+    engine = create_sqlite_engine(db_path)
+    try:
+        pub_repo = PublicationRepository(engine)
+        status = pub_repo.get_status_summary()
+        model_name = (
+            embedding_model
+            or status.get("active_embedding_model")
+            or load_ingestion_policy(settings.ingestion_policy_file).indexing.embedding_model
+        )
+        embedder = create_embedder(str(model_name))
+        table_search = StructuredTableSearchService(engine)
+        with QdrantVectorStore(
+            collection_name=settings.qdrant_collection,
+            url=settings.qdrant_url,
+            path=settings.qdrant_path,
+        ) as qdrant:
+            report = evaluate_retrieval(
+                suite=suite,
+                embedder=embedder,
+                qdrant_store=qdrant,
+                table_search=table_search,
+            )
+    finally:
+        engine.dispose()
+    typer.echo(json.dumps(report.to_dict(), indent=2, sort_keys=True))
+
+
+@eval_app.command("benchmark")
+def eval_benchmark(
+    models: Annotated[
+        str,
+        typer.Option(
+            "--models",
+            help="Comma-separated candidate embedding models to benchmark",
+        ),
+    ] = "intfloat/multilingual-e5-small,BAAI/bge-m3",
+    questions: Annotated[
+        Path,
+        typer.Option("--questions", help="Path to tests/eval/questions.yaml"),
+    ] = Path("tests/eval/questions.yaml"),
+    output_json: Annotated[
+        Path | None,
+        typer.Option("--output-json", help="Optional path to save full JSON benchmark report"),
+    ] = None,
+    sqlite_path: Annotated[Path | None, typer.Option("--sqlite-path")] = None,
+) -> None:
+    """Benchmark candidate multilingual embedding models in isolated temporary stores."""
+    settings = AppSettings()
+    model_list = [m.strip() for m in models.split(",") if m.strip()]
+    reports = benchmark_embedding_models(
+        models=model_list,
+        questions_path=questions,
+        source_sqlite_path=sqlite_path or settings.sqlite_path,
+        scope_path=settings.scope_file,
+        policy_path=settings.ingestion_policy_file,
+        settings=settings,
+    )
+    payload = [r.to_dict() for r in reports]
+    rendered = json.dumps(payload, indent=2, sort_keys=True)
+    if output_json is not None:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        output_json.write_text(rendered + "\n", encoding="utf-8")
+    typer.echo(rendered)
 
 
 @scope_app.command("validate")

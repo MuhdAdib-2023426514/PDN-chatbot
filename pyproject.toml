@@ -10,15 +10,20 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "alembic>=1.14.0",
+    "apscheduler>=3.11.0,<4.0.0",
     "beautifulsoup4>=4.13.0",
+    "fastapi>=0.115.0",
     "httpx>=0.28.0",
     "lxml>=5.3.0",
     "pillow>=11.0.0",
     "pydantic>=2.10.0",
     "pydantic-settings>=2.7.0",
+    "qdrant-client>=1.16.0",
+    "rapidfuzz>=3.10.0",
     "ruamel.yaml>=0.18.0",
     "sqlalchemy>=2.0.36",
     "typer>=0.15.0",
+    "uvicorn[standard]>=0.34.0",
 ]
 
 [project.optional-dependencies]
@@ -29,8 +34,11 @@ ocr = [
     "paddlepaddle>=3.0.0",
     "paddleocr>=3.0.0",
 ]
+embeddings = [
+    "sentence-transformers>=5.0.0",
+]
 all = [
-    "pdn-sync[pdf,ocr]",
+    "pdn-sync[pdf,ocr,embeddings]",
 ]
 
 [project.scripts]
@@ -63,7 +71,15 @@ mypy_path = "src"
 packages = ["pdn_sync"]
 
 [[tool.mypy.overrides]]
-module = ["paddleocr", "docling", "docling.*", "psutil"]
+module = [
+    "paddleocr",
+    "docling",
+    "docling.*",
+    "psutil",
+    "apscheduler.*",
+    "sentence_transformers",
+    "sentence_transformers.*",
+]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

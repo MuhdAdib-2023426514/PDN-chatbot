@@ -70,6 +70,14 @@ class AppSettings(BaseSettings):
     data_dir: Path = Field(default=Path("data"))
     sqlite_path: Path = Field(default=Path("data/pdn_sync.db"))
 
+    # Phase 3 Qdrant, embeddings, and read-only chatbot API settings
+    qdrant_url: str | None = Field(default=None)
+    qdrant_path: Path = Field(default=Path("data/qdrant"))
+    qdrant_collection: str = Field(default="pdn_knowledge_v1", min_length=1)
+    embedding_model: str = Field(default="BAAI/bge-m3", min_length=1)
+    api_host: str = Field(default="127.0.0.1", min_length=1)
+    api_port: int = Field(default=8000, ge=1, le=65535)
+
     max_concurrency_per_host: int = Field(default=1, ge=1, le=2)
     delay_min_seconds: float = Field(default=2.0, ge=2.0)
     delay_max_seconds: float = Field(default=5.0, ge=2.0)
